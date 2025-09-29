@@ -5,7 +5,6 @@
     role="navigation"
     aria-label="Navigation principale"
   >
-    <!-- 1) Brand -->
     <div class="navbar-brand">
       <RouterLink :to="{ name: 'home' }" class="text-decoration-none" @click="handleNavClick">
         <div class="d-flex align-center gap-2">
@@ -15,7 +14,6 @@
       </RouterLink>
     </div>
 
-    <!-- 2) Liens (SEUL bloc qui collapse) -->
     <div class="navbar-links" :class="{ active: isOpen }" id="nav-menu">
       <template v-if="isAuthenticated">
         <RouterLink
@@ -30,7 +28,13 @@
         </RouterLink>
       </template>
 
-      <UserMenu v-if="!isMobile" :username="auth.username" :initials="initials" @logout="logout" />
+      <UserMenu
+        v-if="!isMobile"
+        :username="auth.username"
+        :initials="initials"
+        :role="auth.user?.role"
+        @logout="logout"
+      />
 
       <div class="social-icons">
         <a

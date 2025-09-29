@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex h-75 justify-content-center align-items-center">
-    <VCard class="p-4" elevation="10" rounded="xl">
+    <VCard class="p-4 w-md-50" elevation="10" rounded="xl">
       <div class="d-flex align-center justify-space-between mb-4">
         <div class="d-flex align-center gap-3">
           <VAvatar size="48" class="bar-avatar">
@@ -14,18 +14,17 @@
           </div>
         </div>
       </div>
-
+      <VDivider />
       <VForm ref="formRef" v-model="isValid" @submit.prevent="onSubmit">
         <div class="row g-3">
           <div class="col-12">
             <VTextField
               v-model="email"
               :rules="rules.email"
-              label="Email ou Nom D'utilisateur"
+              label="Email ou Nom d'utilisateur"
               prepend-inner-icon="mdi-email-outline"
               autocomplete="email"
               variant="outlined"
-              density="comfortable"
               hide-details="auto"
               :disabled="loading"
             />
@@ -41,7 +40,6 @@
               label="Mot de passe"
               prepend-inner-icon="mdi-lock-outline"
               variant="outlined"
-              density="comfortable"
               hide-details="auto"
               :disabled="loading"
               required
@@ -54,7 +52,6 @@
               block
               color="primary"
               size="large"
-              class="bar-btn"
               :loading="loading"
               :disabled="!isValid || loading"
             >
@@ -63,13 +60,6 @@
               </template>
               Se connecter
             </VBtn>
-          </div>
-
-          <div class="col-12">
-            <p class="text-center text-body-2 m-0">
-              Mot de passe oublié ?
-              <a href="#" @click.prevent>Réinitialiser</a>
-            </p>
           </div>
         </div>
       </VForm>

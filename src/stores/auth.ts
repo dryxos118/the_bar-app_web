@@ -35,9 +35,9 @@ export const useAuthStore = defineStore("auth", {
         setToken(data.token);
         await this.fetchMe();
         return true;
-      } catch (error) {
-        console.log(error);
-        throw Error("ERR : " + error);
+      } catch (error: any) {
+        console.log(error.response);
+        throw Error("ERR : " + error.response.data.message);
       } finally {
         this.loading = false;
       }
