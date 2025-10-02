@@ -1,9 +1,9 @@
 import { http } from "@/plugins/http";
-import type { AuthResponse, LoginDto, RegisterDto, UserSummaryDto } from "@/models/auth";
+import type { AuthResponse, LoginDto, RegisterDto } from "@/models/auth";
 import { defineStore } from "pinia";
+import type { UserSummaryDto } from "@/models/user";
 
 interface AuthState {
-  user: UserSummaryDto | null;
   token: string | null;
   loading: boolean;
 }
@@ -12,28 +12,19 @@ const STORAGE_KEY = "thebarapp_auth";
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
-    user: null,
     token: getToken(),
     loading: false,
   }),
   getters: {
-    isAuthenticated: (state) => !!state.token && !!state.user,
-    username: (state) => state.user?.username || null,
-    isAdmin: (state) => state.user?.role === "ADMIN",
-    isBarman: (state) => state.user?.role === "BARMAN",
-    isUser: (state) => state.user?.role === "USER",
+    isAuthenticated: (state) => !!state.token,
   },
   actions: {
-    setUser(user: UserSummaryDto | null) {
-      this.user = user;
-    },
     async login(dto: LoginDto) {
       this.loading = true;
       try {
         const { data } = await http.post<AuthResponse>("/auth/login", dto);
         this.token = data.token;
         setToken(data.token);
-        await this.fetchMe();
         return true;
       } catch (error: any) {
         console.log(error.response);
@@ -48,7 +39,6 @@ export const useAuthStore = defineStore("auth", {
         const { data } = await http.post<AuthResponse>("/auth/register", dto);
         this.token = data.token;
         setToken(data.token);
-        await this.fetchMe();
         return true;
       } catch (error) {
         console.log(error);
@@ -57,14 +47,8 @@ export const useAuthStore = defineStore("auth", {
         this.loading = false;
       }
     },
-    async fetchMe() {
-      if (!this.token) return;
-      const { data } = await http.get<UserSummaryDto>("/user/me");
-      this.setUser(data);
-    },
     logout() {
       this.token = null;
-      this.user = null;
       setToken(null);
     },
   },

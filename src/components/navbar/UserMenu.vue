@@ -50,15 +50,18 @@
 
   <BaseDialog
     v-model="show"
-    title="Confirmer la déconnexion"
+    title="Dernier verre ?"
     :show-actions="true"
-    ok-text="Déconnexion"
-    cancel-text="Annuler"
+    ok-text="Oui, je rentre"
+    cancel-text="Non, encore une"
     :loading="loading"
     persistent
     @confirm="onConfirm"
   >
-    <template #default>Vous allez être déconnecté de votre session. Continuer ?</template>
+    <template #default>
+      Vous êtes sur le point de quitter le bar <v-icon icon="mdi-beer" size="28" /><br />
+      Voulez-vous vraiment partir ?
+    </template>
   </BaseDialog>
 </template>
 

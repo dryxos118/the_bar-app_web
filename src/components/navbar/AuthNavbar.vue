@@ -5,7 +5,6 @@
     role="navigation"
     aria-label="Navigation principale (auth)"
   >
-    <!-- Logo -->
     <div class="navbar-brand">
       <RouterLink :to="{ name: 'home' }" class="text-decoration-none" @click="handleNavClick">
         <div class="d-flex align-center gap-2">
@@ -15,20 +14,18 @@
       </RouterLink>
     </div>
 
-    <!-- Liens -->
     <div class="navbar-links" :class="{ active: isOpen }">
       <RouterLink
         v-for="link in notConnectedLinks"
-        :key="link.url"
-        :to="link.url"
+        :key="link.route"
+        :to="link.route"
         class="nav-link"
-        :class="{ active: isActive(link.url) }"
+        :class="{ active: isActive(link.route) }"
         @click="handleNavClick"
       >
-        {{ link.name }}
+        <v-icon start>{{ link.icon }}</v-icon> {{ link.name }}
       </RouterLink>
 
-      <!-- Icônes / actions à droite -->
       <div class="social-icons">
         <a
           href="https://github.com/dryxos118"
@@ -70,11 +67,7 @@
 import { computed } from "vue";
 import { useNavbar } from "./useNavbar";
 import { useThemeStore } from "@/stores/theme";
-
-const notConnectedLinks = [
-  { url: "/login", name: "Se connecter" },
-  { url: "/register", name: "S'inscrire" },
-];
+import { notConnectedLinks } from "@/data/linksData";
 
 const { isOpen, isActive, toggleMenu, handleNavClick } = useNavbar();
 

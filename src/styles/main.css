@@ -58,7 +58,6 @@ a {
   margin-top: 86px;
   margin-left: 3rem;
   margin-right: 3rem;
-  height: calc(100vh - 87px);
 }
 
 @media (max-width: 768px) {
@@ -66,6 +65,22 @@ a {
     margin-left: 1rem;
     margin-right: 1rem;
   }
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hover-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.hover-card:hover {
+  transform: translateY(-6px);
 }
 
 .d-navbar {

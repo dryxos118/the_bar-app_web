@@ -1,9 +1,11 @@
 import AuthLayout from "@/components/layout/AuthLayout.vue";
-import DefaultLayout from "@/components/layout/DefaultLayout.vue";
+import DefaultLayout from "@/components/layout/AppLayout.vue";
 import { useAuthStore } from "@/stores/auth";
+import { useUserStore } from "@/stores/user";
 import DrinksView from "@/views/DrinksView.vue";
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
 import OrderView from "@/views/OrderView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
@@ -28,6 +30,11 @@ const routes: RouteRecordRaw[] = [
     ],
     meta: { guestOnly: true },
   },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: NotFoundView,
+  },
 ];
 
 const router = createRouter({
@@ -37,10 +44,11 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
+  const user = useUserStore();
 
-  if (auth.token && !auth.user) {
+  if (auth.token) {
     try {
-      await auth.fetchMe();
+      await user.fetchMe();
     } catch {
       auth.logout();
     }

@@ -18,21 +18,21 @@
       <template v-if="isAuthenticated">
         <RouterLink
           v-for="link in connectedLinks"
-          :key="link.url"
-          :to="link.url"
+          :key="link.route"
+          :to="link.route"
           class="nav-link"
-          :class="{ active: isActive(link.url) }"
+          :class="{ active: isActive(link.route) }"
           @click="handleNavClick"
         >
-          {{ link.name }}
+          <v-icon start>{{ link.icon }}</v-icon> {{ link.name }}
         </RouterLink>
       </template>
 
       <UserMenu
         v-if="!isMobile"
-        :username="auth.username"
+        :username="user.username"
         :initials="initials"
-        :role="auth.user?.role"
+        :role="user.$state.me?.role"
         @logout="logout"
       />
 
@@ -58,7 +58,7 @@
     </div>
 
     <div v-if="isMobile" class="d-flex align-items-center gap-2">
-      <UserMenu :username="auth.username" :initials="initials" @logout="logout" />
+      <UserMenu :username="user.username" :initials="initials" @logout="logout" />
 
       <button
         class="navbar-toggle"
@@ -85,16 +85,13 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useThemeStore } from "@/stores/theme";
 import UserMenu from "./UserMenu.vue";
-
-const connectedLinks = [
-  { url: "/", name: "Accueil" },
-  { url: "/drinks", name: "Boissons" },
-  { url: "/order", name: "Commande" },
-];
+import { useUserStore } from "@/stores/user";
+import { connectedLinks } from "@/data/linksData";
 
 const { isOpen, isActive, isMobile, toggleMenu, handleNavClick } = useNavbar();
 
 const auth = useAuthStore();
+const user = useUserStore();
 const { isAuthenticated } = storeToRefs(auth);
 
 const router = useRouter();
@@ -105,8 +102,8 @@ const logout = () => {
 };
 
 const initials = computed(() =>
-  auth.username
-    ? auth.username
+  user.username
+    ? user.username
         .split(" ")
         .map((n) => n[0])
         .join("")
