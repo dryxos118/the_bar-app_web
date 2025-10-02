@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { useNavbar } from "./useNavbar";
+import { useNavbar } from "../../plugins/useNavbar";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";

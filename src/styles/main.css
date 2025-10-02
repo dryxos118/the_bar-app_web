@@ -100,6 +100,9 @@ a {
   align-items: center;
   gap: 1rem;
 }
+.navbar-brand span {
+  color: var(--color-primary);
+}
 .logo-circle {
   width: 48px;
   height: 48px;

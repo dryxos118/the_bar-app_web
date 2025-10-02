@@ -20,7 +20,7 @@
 
 <style scoped>
 .footer-bar {
-  box-shadow: var(--elevation-2);
+  background-color: var(--nav-bg);
   border-top: 1px solid var(--nav-border);
 }
 </style>

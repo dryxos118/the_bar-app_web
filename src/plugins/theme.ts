@@ -5,8 +5,7 @@ export const barDark: ThemeDefinition = {
   colors: {
     background: "#1E2029",
     surface: "#242424",
-
-    primary: "#C67C00",
+    primary: "#ff7800",
     "primary-darken-1": "#8E5800",
     secondary: "#9C1F2D",
     "secondary-darken-1": "#6E1620",
@@ -26,13 +25,13 @@ export const barDark: ThemeDefinition = {
 export const barLight: ThemeDefinition = {
   dark: false,
   colors: {
-    background: "#FAF9F6", // quasi ivoire (bonne lisibilité)
-    surface: "#FFFFFF", // cartes/blocs
-    primary: "#A45A00", // ambrée + un peu plus sobre en light
+    background: "#F6F6F6",
+    surface: "#FFFFFF",
+    primary: "#ff7800",
     "primary-darken-1": "#7C4400",
-    secondary: "#8A1B28", // vin rouge
+    secondary: "#8A1B28",
     "secondary-darken-1": "#61131C",
-    accent: "#A5652A", // cuivre doux
+    accent: "#A5652A",
     info: "#2E7DD7",
     success: "#2F9F6E",
     warning: "#E79A00",
