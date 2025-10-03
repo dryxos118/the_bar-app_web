@@ -37,13 +37,14 @@ export const useDrinkStore = defineStore("drink", {
     tags: [],
     showOutOfStock: false,
     sortBy: "NAME",
-    sortDirection: "DESC",
+    sortDirection: "ASC",
     priceRange: null,
     favorites: false,
     alcoholOnly: false,
   }),
   getters: {
     filtered(state) {
+      this.loading = true;
       let list = state.all;
       if (state.category !== "ALL") {
         list = list.filter((d) => d.category === state.category);
@@ -76,10 +77,9 @@ export const useDrinkStore = defineStore("drink", {
             d.ingredients.some((i) => i.toLowerCase().includes(state.search.toLowerCase()))
         );
       }
-      return list.sort((a, b) => {
+      const sorted = list.sort((a, b) => {
         let va: string | number = "";
         let vb: string | number = "";
-
         switch (state.sortBy) {
           case "NAME":
             va = a.name.toLowerCase();
@@ -90,13 +90,13 @@ export const useDrinkStore = defineStore("drink", {
             vb = b.price;
             break;
         }
-
         const dir = state.sortDirection === "ASC" ? 1 : -1;
-
         if (va < vb) return -1 * dir;
         if (va > vb) return 1 * dir;
         return 0;
       });
+      this.loading = false;
+      return sorted;
     },
   },
   actions: {
@@ -109,6 +109,7 @@ export const useDrinkStore = defineStore("drink", {
         this.all = data;
         this.loaded = true;
       } finally {
+        await new Promise((r) => setTimeout(r, 1000));
         this.loading = false;
       }
     },
@@ -117,7 +118,7 @@ export const useDrinkStore = defineStore("drink", {
       this.category = "ALL";
       this.priceRange = null;
       this.sortBy = "NAME";
-      this.sortDirection = "DESC";
+      this.sortDirection = "ASC";
       this.tags = [];
       this.showOutOfStock = false;
     },

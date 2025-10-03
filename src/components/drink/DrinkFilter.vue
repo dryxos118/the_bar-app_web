@@ -18,7 +18,7 @@
 
     <div class="col-12 col-sm-6 col-lg-3">
       <VSelect
-        :items="categories.map((d) => d.key)"
+        :items="categories.map((d) => d.key).sort()"
         v-model="drink.category"
         label="Catégorie"
         variant="outlined"
@@ -40,7 +40,7 @@
     </div>
 
     <div class="col-12 col-lg-2 d-flex gap-2">
-      <v-btn-toggle v-model="drink.favorites" class="w-100 h-100" mandatory density="comfortable">
+      <v-btn-toggle v-model="drink.favorites" class="h-100" mandatory density="comfortable">
         <v-btn
           :value="false"
           variant="outlined"

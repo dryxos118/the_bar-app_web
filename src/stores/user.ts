@@ -30,12 +30,14 @@ export const useUserStore = defineStore("user", {
       try {
         const { data } = await http.get<UserSummaryDto>("/me/info");
         this.me = data;
+        await this.fetchPreferences();
       } finally {
         this.loading = false;
       }
     },
     async fetchPreferences() {
       const { data } = await http.get<UserPreferencesDto>("/me/preferences");
+      console.log(data);
       this.preferences = data;
     },
     async updatePreferences(dto: UserSettingsDto) {
