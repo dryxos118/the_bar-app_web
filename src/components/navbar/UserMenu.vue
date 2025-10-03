@@ -116,7 +116,7 @@ const hasAdmin = computed(() => props.role === "ADMIN");
   align-items: center;
 }
 .ring {
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 .avatar-text {
   font-weight: 700;

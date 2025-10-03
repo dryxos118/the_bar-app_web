@@ -9,13 +9,17 @@ export type DrinkCategory =
   | "OTHER"
   | "ALL";
 
-export type DrinkTags = "CLASSIC" | "SIGNATURE" | "NON_ALCOHOLIC";
+export type DrinkTag = "CLASSIC" | "SIGNATURE" | "NON_ALCOHOLIC";
+
+export type DrinkSortBy = "NAME" | "PRICE";
+
+export type DrinkSortDirection = "ASC" | "DESC";
 
 export interface DrinkDto {
   id: number;
   name: string;
   category: DrinkCategory;
-  tags: DrinkTags[];
+  tags: DrinkTag[];
   glass: string;
   image: string;
   price: number;

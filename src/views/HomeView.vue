@@ -1,44 +1,30 @@
 <template>
   <div class="container-fluid p-2 p-md-3">
-    <div class="row justify-content-center text-center mb-6">
+    <div class="row justify-content-center text-center mb-4">
       <div class="col-12 col-lg-10">
-        <h1 class="display-5 fw-bold text-gradient">Santé {{ user.username }} !</h1>
-        <p class="mt-2">Explorez nos boissons par catégories, ou lancez une recherche.</p>
-
-        <div class="d-flex flex-column flex-md-row align-items-stretch gap-3 mt-6">
-          <v-text-field
-            v-model="search"
-            variant="outlined"
-            density="comfortable"
-            placeholder="Un petit verre ? Cherche ici !!!"
-            prepend-inner-icon="mdi-magnify"
-            color="primary"
-            hide-details
-            @keyup.enter="goSearch"
-            class="flex-grow-1"
-          />
-          <div class="d-flex ms-3 gap-3 justify-content-center align-items-center">
-            <v-chip
-              prepend-icon="mdi-star"
-              size="large"
-              variant="elevated"
-              color="secondary"
-              @click="goFavorites"
-              class="hover-card"
-            >
-              Best Of
-            </v-chip>
-            <v-chip
-              prepend-icon="mdi-dice-5"
-              size="large"
-              variant="elevated"
-              color="secondary"
-              @click="goRandom"
-              class="hover-card"
-            >
-              Cuite Surprise
-            </v-chip>
-          </div>
+        <h1 class="text-gradient">Santé {{ user.username }}</h1>
+        <p class="mt-2">Accédez rapidement à vos habitudes, ou parcourez par catégories.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3 mt-3">
+          <v-chip
+            prepend-icon="mdi-star"
+            size="large"
+            variant="elevated"
+            color="secondary"
+            @click="goFavorites"
+            class="hover-card"
+          >
+            Best Of
+          </v-chip>
+          <v-chip
+            prepend-icon="mdi-dice-5"
+            size="large"
+            variant="elevated"
+            color="secondary"
+            @click="goRandom"
+            class="hover-card"
+          >
+            Cuite Surprise
+          </v-chip>
         </div>
       </div>
     </div>
@@ -85,12 +71,10 @@
 import { categories } from "@/data/categoriesData";
 import type { DrinkCategory } from "@/models/drink";
 import { useUserStore } from "@/stores/user";
-import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const user = useUserStore();
-const search = ref("");
 
 function goCategory(category: DrinkCategory) {
   if (category == "ALL") {
@@ -106,9 +90,5 @@ function goRandom() {
   const randomIndex = Math.floor(Math.random() * categories.length);
   const randomCategory = categories[randomIndex];
   goCategory(randomCategory.key);
-}
-function goSearch() {
-  if (!search.value?.trim()) return;
-  router.push({ name: "drinks", query: { search: search.value.trim() } });
 }
 </script>

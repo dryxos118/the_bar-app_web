@@ -10,6 +10,7 @@ import "./styles/main.css";
 import App from "./App.vue";
 import router from "./router";
 import { barDark, barLight } from "./plugins/theme";
+import { fr } from "vuetify/locale";
 
 const app = createApp(App);
 app.use(createPinia());
@@ -22,6 +23,10 @@ app.use(
         barDark,
         barLight,
       },
+    },
+    locale: {
+      locale: "fr",
+      messages: { fr },
     },
   })
 );

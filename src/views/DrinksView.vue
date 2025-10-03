@@ -1,34 +1,31 @@
 <template>
-  <div class="p-4">
-    <h1>Drinks View</h1>
-
-    <div>category : {{ category ?? "Null" }}</div>
-    <div>favorites : {{ favorites ?? "Null" }}</div>
-    <div>search : {{ search ?? "Null" }}</div>
-
-    <hr />
-    <pre>{{ route.query }}</pre>
+  <div class="container-fluid p-2 p-md-3">
+    <DrinkFilter />
+    <pre>{{ formattedJson }}</pre>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import DrinkFilter from "@/components/drink/DrinkFilter.vue";
+import type { DrinkCategory } from "@/models/drink";
+import { useDrinkStore } from "@/stores/drink";
+import { watch, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 
+const drink = useDrinkStore();
 const route = useRoute();
 
-const category = ref<string | null>(null);
-const favorites = ref<string | null>(null);
-const search = ref<string | null>(null);
+const formattedJson = computed(() => JSON.stringify(drink.filtered, null, 2));
+
+onMounted(async () => {
+  await drink.fetchAll();
+});
 
 watch(
   () => route.query,
   (q) => {
     console.log("Query params changés :", q);
-
-    category.value = (q.category as string) ?? null;
-    favorites.value = (q.favorites as string) ?? null;
-    search.value = (q.search as string) ?? null;
+    drink.category = (q.category as DrinkCategory) ?? "ALL";
   },
   { immediate: true }
 );

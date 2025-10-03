@@ -16,6 +16,7 @@ export const useUserStore = defineStore("user", {
   }),
   getters: {
     isFavorite: (s) => (drinkId: number) => s.preferences?.favoriteDrinkIds.includes(drinkId),
+    getFavoritesIds: (s) => s.preferences?.favoriteDrinkIds ?? [],
     username: (state) => state.me?.username || null,
     isAdmin: (state) => state.me?.role === "ADMIN",
     isBarman: (state) => state.me?.role === "BARMAN",

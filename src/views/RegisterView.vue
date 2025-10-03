@@ -4,7 +4,7 @@
       <div class="d-flex align-center justify-space-between mb-4">
         <div class="d-flex align-center gap-3">
           <VAvatar size="48" class="bar-avatar">
-            <v-icon>mdi-glass-cocktail</v-icon>
+            <VIcon>mdi-glass-cocktail</VIcon>
           </VAvatar>
           <div>
             <h1 class="text-h5 mb-1">The Bar App</h1>
@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { useSnackbar } from "@/stores/snackbar";
-import { computed, ref, type VNodeRef } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { VForm } from "vuetify/components";
 

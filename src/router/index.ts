@@ -46,7 +46,7 @@ router.beforeEach(async (to) => {
   const auth = useAuthStore();
   const user = useUserStore();
 
-  if (auth.token) {
+  if (auth.token && !user.$state.me) {
     try {
       await user.fetchMe();
     } catch {

@@ -1,7 +1,6 @@
 import { http } from "@/plugins/http";
 import type { AuthResponse, LoginDto, RegisterDto } from "@/models/auth";
 import { defineStore } from "pinia";
-import type { UserSummaryDto } from "@/models/user";
 
 interface AuthState {
   token: string | null;

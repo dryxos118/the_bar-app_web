@@ -14,7 +14,6 @@ export const useSnackbar = defineStore("snackbar", {
     color: "info",
     timeout: 3000,
   }),
-
   actions: {
     trigger(message: string, color: SnackbarState["color"] = "info", timeout = 3000) {
       this.message = message;
