@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
+import AuthNavbar from "@/navbars/AuthNavbar.vue";
 import Footer from "./Footer.vue";
-import AuthNavbar from "@/components/navbar/AuthNavbar.vue";
-import Snackbar from "@/components/Snackbar.vue";
+import Snackbar from "@/components/ui/Snackbar.vue";
 </script>

@@ -78,13 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import { useNavbar } from "../../plugins/useNavbar";
+import { useNavbar } from "@/plugins/useNavbar";
 import { useAuthStore } from "@/stores/auth";
 import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useThemeStore } from "@/stores/theme";
-import UserMenu from "./UserMenu.vue";
+import UserMenu from "../components/ui/UserMenu.vue";
 import { useUserStore } from "@/stores/user";
 import { connectedLinks } from "@/data/linksData";
 

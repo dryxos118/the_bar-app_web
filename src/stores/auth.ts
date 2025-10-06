@@ -1,6 +1,7 @@
 import { http } from "@/plugins/http";
 import type { AuthResponse, LoginDto, RegisterDto } from "@/models/auth";
 import { defineStore } from "pinia";
+import { authService } from "@/services/authService";
 
 interface AuthState {
   token: string | null;
@@ -11,7 +12,7 @@ const STORAGE_KEY = "thebarapp_auth";
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
-    token: getToken(),
+    token: authService.getToken(),
     loading: false,
   }),
   getters: {
@@ -21,13 +22,13 @@ export const useAuthStore = defineStore("auth", {
     async login(dto: LoginDto) {
       this.loading = true;
       try {
-        const { data } = await http.post<AuthResponse>("/auth/login", dto);
+        const data = await authService.login(dto);
         this.token = data.token;
-        setToken(data.token);
+        authService.setToken(data.token);
         return true;
       } catch (error: any) {
-        console.log(error.response);
-        throw Error("ERR : " + error.response.data.message);
+        console.error(error);
+        throw Error(error.response?.data?.message ?? "Erreur");
       } finally {
         this.loading = false;
       }
@@ -35,32 +36,20 @@ export const useAuthStore = defineStore("auth", {
     async register(dto: RegisterDto) {
       this.loading = true;
       try {
-        const { data } = await http.post<AuthResponse>("/auth/register", dto);
+        const data = await authService.register(dto);
         this.token = data.token;
-        setToken(data.token);
+        authService.setToken(data.token);
         return true;
-      } catch (error) {
-        console.log(error);
-        return false;
+      } catch (error: any) {
+        console.error(error);
+        throw Error(error.response?.data?.message ?? "Erreur");
       } finally {
         this.loading = false;
       }
     },
     logout() {
       this.token = null;
-      setToken(null);
+      authService.logout();
     },
   },
 });
-
-function setToken(token: string | null) {
-  if (token) {
-    localStorage.setItem(STORAGE_KEY, token);
-  } else {
-    localStorage.removeItem(STORAGE_KEY);
-  }
-}
-
-function getToken(): string | null {
-  return localStorage.getItem(STORAGE_KEY);
-}

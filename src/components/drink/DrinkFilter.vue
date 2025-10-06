@@ -46,8 +46,9 @@
           variant="outlined"
           icon="mdi-star-outline"
           :aria-label="'Tous'"
+          size="large"
         ></v-btn>
-        <v-btn :value="true" icon="mdi-star" :aria-label="'Favoris'"></v-btn>
+        <v-btn :value="true" icon="mdi-star" :aria-label="'Favoris'" size="large"></v-btn>
       </v-btn-toggle>
       <v-btn
         variant="outlined"
@@ -114,10 +115,10 @@
         </div>
       </template>
       <template #actions="{ confirm, cancel }">
-        <VBtn variant="tonal" prepend-icon="mdi-filter-off" @click="clearFilter(cancel)"
+        <VBtn variant="outlined" prepend-icon="mdi-filter-off" @click="clearFilter(cancel)"
           >Réinitialiser</VBtn
         >
-        <VBtn variant="tonal" prepend-icon="mdi-check" @click="confirm()">Appliquer</VBtn>
+        <VBtn variant="outlined" prepend-icon="mdi-check" @click="confirm()">Appliquer</VBtn>
       </template>
     </BaseDialog>
   </div>
@@ -127,7 +128,7 @@
 import { categories } from "@/data/categoriesData";
 import { useDrinkStore } from "@/stores/drink";
 import { computed, ref } from "vue";
-import BaseDialog from "../dialog/BaseDialog.vue";
+import BaseDialog from "../base/BaseDialog.vue";
 
 const drink = useDrinkStore();
 const dialog = ref(false);

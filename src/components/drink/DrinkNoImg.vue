@@ -16,8 +16,6 @@ import { VIcon } from "vuetify/components";
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #aaa;
-  background: #f8f8f8;
   border-radius: 12px;
   font-size: 0.9rem;
   font-style: italic;

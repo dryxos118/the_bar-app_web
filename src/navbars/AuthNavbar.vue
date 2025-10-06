@@ -65,7 +65,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useNavbar } from "../../plugins/useNavbar";
+import { useNavbar } from "../plugins/useNavbar";
 import { useThemeStore } from "@/stores/theme";
 import { notConnectedLinks } from "@/data/linksData";
 

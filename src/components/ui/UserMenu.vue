@@ -10,7 +10,6 @@
       </template>
 
       <v-sheet min-width="240" elevation="2" rounded="lg">
-        <!-- En-tête -->
         <div class="menu-header">
           <v-avatar size="40" class="ring">
             <span class="avatar-text">{{ safeInitials }}</span>
@@ -68,7 +67,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { VAvatar, VBtn, VList, VMenu } from "vuetify/components";
-import BaseDialog from "../dialog/BaseDialog.vue";
+import BaseDialog from "../base/BaseDialog.vue";
 
 type Role = "ADMIN" | "BARMAN" | "USER";
 

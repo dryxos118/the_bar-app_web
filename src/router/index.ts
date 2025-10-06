@@ -1,5 +1,5 @@
-import AuthLayout from "@/components/layout/AuthLayout.vue";
-import DefaultLayout from "@/components/layout/AppLayout.vue";
+import AuthLayout from "@/layouts/AuthLayout.vue";
+import DefaultLayout from "@/layouts/AppLayout.vue";
 import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
 import DrinksView from "@/views/DrinksView.vue";
