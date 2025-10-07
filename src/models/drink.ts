@@ -11,7 +11,7 @@ export type DrinkCategory =
 
 export type DrinkTag = "CLASSIC" | "SIGNATURE" | "NON_ALCOHOLIC";
 
-export type DrinkSortBy = "NAME" | "PRICE";
+export type DrinkSortBy = "NAME" | "PRICE" | "CATEGORY";
 
 export type DrinkSortDirection = "ASC" | "DESC";
 

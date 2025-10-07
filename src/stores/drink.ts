@@ -89,6 +89,9 @@ export const useDrinkStore = defineStore("drink", {
             va = a.price;
             vb = b.price;
             break;
+          case "CATEGORY":
+            va = a.category;
+            vb = b.category;
         }
         const dir = state.sortDirection === "ASC" ? 1 : -1;
         if (va < vb) return -1 * dir;

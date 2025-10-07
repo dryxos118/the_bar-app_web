@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-wrap justify-content-center gap-3 mt-3">
-    <v-chip
+    <VChip
       prepend-icon="mdi-star"
       size="large"
       variant="flat"
@@ -9,9 +9,9 @@
       class="hover-card"
     >
       Best Of
-    </v-chip>
+    </VChip>
 
-    <v-chip
+    <VChip
       prepend-icon="mdi-dice-5"
       size="large"
       variant="flat"
@@ -20,7 +20,7 @@
       class="hover-card"
     >
       Cuite Surprise
-    </v-chip>
+    </VChip>
   </div>
 </template>
 

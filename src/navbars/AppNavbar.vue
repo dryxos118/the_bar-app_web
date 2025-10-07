@@ -57,8 +57,13 @@
       </div>
     </div>
 
-    <div v-if="isMobile" class="d-flex align-items-center gap-2">
-      <UserMenu :username="user.username" :initials="initials" @logout="logout" />
+    <div v-if="isMobile" class="d-flex align-items-center gap-3">
+      <UserMenu
+        :username="user.username"
+        :role="user.me?.role"
+        :initials="initials"
+        @logout="logout"
+      />
 
       <button
         class="navbar-toggle"

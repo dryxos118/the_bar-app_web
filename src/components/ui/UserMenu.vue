@@ -1,50 +1,50 @@
 <template>
   <div class="user-menu">
-    <v-menu location="bottom right" :offset="[4, 8]" transition="fade-transition">
+    <VMenu location="bottom right" :offset="[4, 8]" transition="fade-transition">
       <template #activator="{ props: vProps }">
-        <v-btn v-bind="vProps" icon aria-label="Menu utilisateur">
-          <v-avatar size="34" class="ring">
+        <VBtn v-bind="vProps" icon aria-label="Menu utilisateur">
+          <VAvatar size="34">
             <span class="avatar-text">{{ safeInitials }}</span>
-          </v-avatar>
-        </v-btn>
+          </VAvatar>
+        </VBtn>
       </template>
 
-      <v-sheet min-width="240" elevation="2" rounded="lg">
+      <VSheet min-width="240" elevation="2" rounded="lg">
         <div class="menu-header">
-          <v-avatar size="40" class="ring">
+          <VAvatar size="40" class="ring">
             <span class="avatar-text">{{ safeInitials }}</span>
-          </v-avatar>
+          </VAvatar>
           <div class="id-block">
             <div class="name">{{ safeUsername }}</div>
             <div class="role">
-              <v-icon size="16" class="mr-1">mdi-shield-account</v-icon>
+              <VIcon size="16" class="mr-1">mdi-shield-account</VIcon>
               {{ roleLabel }}
             </div>
           </div>
         </div>
 
-        <v-divider class="my-2" />
+        <VDivider class="my-2" />
 
-        <v-list nav density="comfortable">
-          <v-list-item to="/profile" router prepend-icon="mdi-account-circle" title="Profil" />
-          <v-list-item
+        <VList nav density="comfortable">
+          <VListItem to="/profile" router prepend-icon="mdi-account-circle" title="Profil" />
+          <VListItem
             v-if="hasAdmin"
             to="/admin"
             router
             prepend-icon="mdi-shield-crown"
             title="Espace admin"
           />
-          <v-divider class="my-1" />
-          <v-list-item
+          <VDivider class="my-1" />
+          <VListItem
             class="text-danger"
             clickable
             prepend-icon="mdi-logout"
             title="Déconnexion"
             @click="show = true"
           />
-        </v-list>
-      </v-sheet>
-    </v-menu>
+        </VList>
+      </VSheet>
+    </VMenu>
   </div>
 
   <BaseDialog

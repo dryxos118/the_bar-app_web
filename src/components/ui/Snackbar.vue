@@ -1,16 +1,17 @@
 <template>
-  <v-snackbar
+  <VSnackbar
     v-model="snackbar.show"
     :color="snackbar.color"
     :timeout="snackbar.timeout"
     location="top center"
+    rounded="pill"
   >
     {{ snackbar.message }}
 
     <template v-slot:actions>
-      <v-btn icon="mdi-close" size="small" variant="text" @click="snackbar.close" />
+      <VBtn icon="mdi-close" size="small" variant="outlined" @click="snackbar.close" />
     </template>
-  </v-snackbar>
+  </VSnackbar>
 </template>
 
 <script setup lang="ts">

@@ -4,11 +4,13 @@ import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
 import DrinksView from "@/views/DrinksView.vue";
 import HomeView from "@/views/HomeView.vue";
-import LoginView from "@/views/LoginView.vue";
-import NotFoundView from "@/views/NotFoundView.vue";
+import LoginView from "@/views/auth/LoginView.vue";
+import NotFoundView from "@/views/error/NotFoundView.vue";
 import OrderView from "@/views/OrderView.vue";
-import RegisterView from "@/views/RegisterView.vue";
+import RegisterView from "@/views/auth/RegisterView.vue";
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
+import AdminView from "@/views/admin/AdminView.vue";
+import AdminDrinksView from "@/views/admin/AdminDrinksView.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -18,6 +20,13 @@ const routes: RouteRecordRaw[] = [
       { path: "", name: "home", component: HomeView },
       { path: "drinks", name: "drinks", component: DrinksView },
       { path: "order", name: "order", component: OrderView },
+      { path: "admin", name: "admin", component: AdminView, meta: { requiresAdmin: true } },
+      {
+        path: "admin/drinks",
+        name: "adminDrinks",
+        component: AdminDrinksView,
+        meta: { requiresAdmin: true },
+      },
     ],
     meta: { requiresAuth: true },
   },
@@ -55,6 +64,9 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     return { name: "login", query: { redirect: to.fullPath } };
+  }
+  if (to.meta.requiresAdmin && !(user.isAdmin || user.isBarman)) {
+    return { name: "forbidden" };
   }
   if (to.meta.guestOnly && auth.isAuthenticated) {
     return { name: "home" };

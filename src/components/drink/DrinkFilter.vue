@@ -145,13 +145,30 @@ const options = [
   { title: "Nom Z→A", value: "NAME_DESC" },
   { title: "Prix croissant", value: "PRICE_ASC" },
   { title: "Prix décroissant", value: "PRICE_DESC" },
+  { title: "Catégorie A→Z", value: "CATEGORY_ASC" },
+  { title: "Catégorie Z→A", value: "CATEGORY_DESC" },
 ];
-type SortKey = "NAME_ASC" | "NAME_DESC" | "PRICE_ASC" | "PRICE_DESC";
+
+type SortKey =
+  | "NAME_ASC"
+  | "NAME_DESC"
+  | "PRICE_ASC"
+  | "PRICE_DESC"
+  | "CATEGORY_ASC"
+  | "CATEGORY_DESC";
 
 const selectedKey = computed<SortKey>({
   get() {
-    if (drink.sortBy === "NAME") return drink.sortDirection === "ASC" ? "NAME_ASC" : "NAME_DESC";
-    return drink.sortDirection === "ASC" ? "PRICE_ASC" : "PRICE_DESC";
+    switch (drink.sortBy) {
+      case "NAME":
+        return drink.sortDirection === "ASC" ? "NAME_ASC" : "NAME_DESC";
+      case "PRICE":
+        return drink.sortDirection === "ASC" ? "PRICE_ASC" : "PRICE_DESC";
+      case "CATEGORY":
+        return drink.sortDirection === "ASC" ? "CATEGORY_ASC" : "CATEGORY_DESC";
+      default:
+        return "NAME_ASC";
+    }
   },
   set(v) {
     switch (v) {
@@ -166,6 +183,12 @@ const selectedKey = computed<SortKey>({
         break;
       case "PRICE_DESC":
         drink.setSort("PRICE", "DESC");
+        break;
+      case "CATEGORY_ASC":
+        drink.setSort("CATEGORY", "ASC");
+        break;
+      case "CATEGORY_DESC":
+        drink.setSort("CATEGORY", "DESC");
         break;
     }
   },
