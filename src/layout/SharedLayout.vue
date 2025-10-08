@@ -1,7 +1,7 @@
 <template>
   <VApp>
     <Snackbar />
-    <AppNavbar />
+    <slot />
     <VMain class="page py-6">
       <RouterView />
     </VMain>
@@ -10,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-import Snackbar from "@/components/ui/Snackbar.vue";
+import Snackbar from "@/components/Snackbar.vue";
 import Footer from "./Footer.vue";
-import AppNavbar from "@/navbars/AppNavbar.vue";
 </script>

@@ -71,3 +71,9 @@ export const categories: Array<{
     icon: "mdi-infinity",
   },
 ];
+
+export const tagItems = [
+  { title: "Classic", value: "CLASSIC" },
+  { title: "Signature", value: "SIGNATURE" },
+  { title: "Sans alcool", value: "NON_ALCOHOLIC" },
+];

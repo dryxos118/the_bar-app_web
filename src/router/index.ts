@@ -1,76 +1,61 @@
-import AuthLayout from "@/layouts/AuthLayout.vue";
-import DefaultLayout from "@/layouts/AppLayout.vue";
-import { useAuthStore } from "@/stores/auth";
-import { useUserStore } from "@/stores/user";
-import DrinksView from "@/views/DrinksView.vue";
-import HomeView from "@/views/HomeView.vue";
-import LoginView from "@/views/auth/LoginView.vue";
-import NotFoundView from "@/views/error/NotFoundView.vue";
-import OrderView from "@/views/OrderView.vue";
-import RegisterView from "@/views/auth/RegisterView.vue";
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
-import AdminView from "@/views/admin/AdminView.vue";
-import AdminDrinksView from "@/views/admin/AdminDrinksView.vue";
+import { guestOnly, requiresAdmin, requiresAuth } from "./guards";
 
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    component: DefaultLayout,
+    component: () => import("@/layout/PublicLayout.vue"),
+    beforeEnter: guestOnly,
     children: [
-      { path: "", name: "home", component: HomeView },
-      { path: "drinks", name: "drinks", component: DrinksView },
-      { path: "order", name: "order", component: OrderView },
-      { path: "admin", name: "admin", component: AdminView, meta: { requiresAdmin: true } },
+      { path: "login", name: "login", component: () => import("@/views/auth/LoginView.vue") },
       {
-        path: "admin/drinks",
-        name: "adminDrinks",
-        component: AdminDrinksView,
-        meta: { requiresAdmin: true },
+        path: "register",
+        name: "register",
+        component: () => import("@/views/auth/RegisterView.vue"),
       },
     ],
-    meta: { requiresAuth: true },
   },
   {
     path: "/",
-    component: AuthLayout,
+    component: () => import("@/layout/PrivateLayout.vue"),
+    beforeEnter: requiresAuth,
     children: [
-      { path: "login", name: "login", component: LoginView },
-      { path: "register", name: "register", component: RegisterView },
+      { path: "", name: "home", component: () => import("@/views/HomeView.vue") },
+      { path: "drinks", name: "drinks", component: () => import("@/views/DrinksView.vue") },
+      { path: "orders", name: "orders", component: () => import("@/views/OrdersView.vue") },
     ],
-    meta: { guestOnly: true },
+  },
+  {
+    path: "/admin",
+    component: () => import("@/layout/PrivateLayout.vue"),
+    beforeEnter: [requiresAuth, requiresAdmin],
+    children: [
+      { path: "", name: "admin", component: () => import("@/views/admin/AdminHomeView.vue") },
+      {
+        path: "drinks",
+        name: "admin-drinks",
+        component: () => import("@/views/admin/AdminDrinksView.vue"),
+      },
+      {
+        path: "users",
+        name: "admin-users",
+        component: () => import("@/views/admin/AdminUsersView.vue"),
+      },
+    ],
+  },
+  {
+    path: "/forbidden",
+    name: "forbidden",
+    component: () => import("@/views/error/ForbiddenView.vue"),
   },
   {
     path: "/:pathMatch(.*)*",
-    name: "NotFound",
-    component: NotFoundView,
+    name: "not-found",
+    component: () => import("@/views/error/NotFoundView.vue"),
   },
 ];
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
-
-router.beforeEach(async (to) => {
-  const auth = useAuthStore();
-  const user = useUserStore();
-
-  if (auth.token && !user.$state.me) {
-    try {
-      await user.fetchMe();
-    } catch {
-      auth.logout();
-    }
-  }
-  if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    return { name: "login", query: { redirect: to.fullPath } };
-  }
-  if (to.meta.requiresAdmin && !(user.isAdmin || user.isBarman)) {
-    return { name: "forbidden" };
-  }
-  if (to.meta.guestOnly && auth.isAuthenticated) {
-    return { name: "home" };
-  }
-});
-
-export default router;

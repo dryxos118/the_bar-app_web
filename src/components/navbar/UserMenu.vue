@@ -4,7 +4,7 @@
       <template #activator="{ props: vProps }">
         <VBtn v-bind="vProps" icon aria-label="Menu utilisateur">
           <VAvatar size="34">
-            <span class="avatar-text">{{ safeInitials }}</span>
+            <span class="avatar-text">{{ initials }}</span>
           </VAvatar>
         </VBtn>
       </template>
@@ -12,7 +12,7 @@
       <VSheet min-width="240" elevation="2" rounded="lg">
         <div class="menu-header">
           <VAvatar size="40" class="ring">
-            <span class="avatar-text">{{ safeInitials }}</span>
+            <span class="avatar-text">{{ initials }}</span>
           </VAvatar>
           <div class="id-block">
             <div class="name">{{ safeUsername }}</div>
@@ -37,6 +37,7 @@
           <VDivider class="my-1" />
           <VListItem
             class="text-danger"
+            variant="outlined"
             clickable
             prepend-icon="mdi-logout"
             title="Déconnexion"
@@ -67,13 +68,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { VAvatar, VBtn, VList, VMenu } from "vuetify/components";
-import BaseDialog from "../base/BaseDialog.vue";
+import BaseDialog from "@/components/common/BaseDialog.vue";
 
 type Role = "ADMIN" | "BARMAN" | "USER";
 
 const props = defineProps<{
   username?: string | null;
-  initials?: string;
+  initials: string;
   role?: Role;
 }>();
 
@@ -94,7 +95,6 @@ function onConfirm() {
   }
 }
 
-const safeInitials = computed(() => (props.initials?.trim() || "?").slice(0, 3).toUpperCase());
 const safeUsername = computed(() => props.username || "Utilisateur");
 const roleLabel = computed(() => {
   switch (props.role) {
@@ -106,7 +106,7 @@ const roleLabel = computed(() => {
       return "Membre";
   }
 });
-const hasAdmin = computed(() => props.role === "ADMIN");
+const hasAdmin = computed(() => props.role === "ADMIN" || props.role === "BARMAN");
 </script>
 
 <style scoped>

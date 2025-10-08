@@ -1,4 +1,4 @@
-interface LinksData {
+export interface LinksData {
   route: string;
   name: string;
   icon: string;
@@ -7,7 +7,7 @@ interface LinksData {
 export const connectedLinks: LinksData[] = [
   { route: "/", name: "Le Comptoir", icon: "mdi-home" },
   { route: "/drinks", name: "La Carte", icon: "mdi-glass-mug-variant" },
-  { route: "/order", name: "Ma Tournée", icon: "mdi-cash" },
+  { route: "/orders", name: "Ma Tournée", icon: "mdi-cash" },
 ];
 
 export const notConnectedLinks: LinksData[] = [

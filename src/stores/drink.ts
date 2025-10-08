@@ -1,20 +1,19 @@
 import { defineStore } from "pinia";
-import { http } from "@/plugins/http";
-import type {
-  DrinkCategory,
-  DrinkDto,
-  DrinkSortBy,
-  DrinkSortDirection,
-  DrinkTag,
+import {
+  type DrinkCategory,
+  type DrinkDto,
+  type DrinkSortBy,
+  type DrinkSortDirection,
+  type DrinkTag,
 } from "@/models/drink";
+import { drinkService } from "@/logic/services/drinkService";
 import { useUserStore } from "./user";
 
 interface DrinkState {
-  // data
   all: DrinkDto[];
   loading: boolean;
   loaded: boolean;
-  // filters
+  //* FILTERS
   search: string;
   category: DrinkCategory;
   tags: DrinkTag[];
@@ -26,12 +25,19 @@ interface DrinkState {
   alcoholOnly: boolean;
 }
 
+function compareValues(a: string | number, b: string | number, dir: DrinkSortDirection) {
+  const mult = dir === "ASC" ? 1 : -1;
+  if (a < b) return -1 * mult;
+  if (a > b) return 1 * mult;
+  return 0;
+}
+
 export const useDrinkStore = defineStore("drink", {
   state: (): DrinkState => ({
     all: [],
     loading: false,
     loaded: false,
-    // filter
+    //* FILTERS
     search: "",
     category: "ALL",
     tags: [],
@@ -43,12 +49,14 @@ export const useDrinkStore = defineStore("drink", {
     alcoholOnly: false,
   }),
   getters: {
-    filtered(state) {
-      this.loading = true;
+    //** FILTERED
+    filtered(state): DrinkDto[] {
       let list = state.all;
+      //* CATEGORY
       if (state.category !== "ALL") {
         list = list.filter((d) => d.category === state.category);
       }
+      //* TAGS
       if (state.tags.length) {
         const selected = state.tags;
         list = list.filter((d) => {
@@ -56,28 +64,35 @@ export const useDrinkStore = defineStore("drink", {
           return selected.some((tag) => dTags.includes(tag));
         });
       }
+      //* STOCK
       if (!state.showOutOfStock) {
         list = list.filter((d) => !d.outOfStock);
       }
+      //* PRICE
       if (state.priceRange) {
         const [min, max] = state.priceRange;
         list = list.filter((d) => d.price >= min && d.price <= max);
       }
+      //* ALCOHOL
       if (state.alcoholOnly) {
         list = list.filter((d) => d.hasAlcohol);
       }
+      //* FAVORITE
       if (state.favorites) {
         const user = useUserStore();
         list = list.filter((d) => user.isFavorite(d.id));
       }
-      if (state.search.trim()) {
-        list = list.filter(
-          (d) =>
-            d.name.toLowerCase().includes(state.search.toLowerCase()) ||
-            d.ingredients.some((i) => i.toLowerCase().includes(state.search.toLowerCase()))
-        );
+      //* SEARCH
+      const q = state.search.trim().toLowerCase();
+      if (q) {
+        list = list.filter((d) => {
+          const inName = d.name.toLowerCase().includes(q);
+          const inIngr = (d.ingredients ?? []).some((i) => i?.toLowerCase?.().includes(q));
+          return inName || inIngr;
+        });
       }
-      const sorted = list.sort((a, b) => {
+      //* SORT
+      return [...list].sort((a, b) => {
         let va: string | number = "";
         let vb: string | number = "";
         switch (state.sortBy) {
@@ -92,23 +107,22 @@ export const useDrinkStore = defineStore("drink", {
           case "CATEGORY":
             va = a.category;
             vb = b.category;
+            break;
         }
-        const dir = state.sortDirection === "ASC" ? 1 : -1;
-        if (va < vb) return -1 * dir;
-        if (va > vb) return 1 * dir;
-        return 0;
+        return compareValues(va, vb, state.sortDirection);
       });
-      this.loading = false;
-      return sorted;
     },
+    //* BY ID
+    byId: (state) => (id: number) => state.all.find((d) => d.id === id) ?? null,
   },
   actions: {
+    //* FETCH ALL
     async fetchAll(force = false) {
       if (this.loading) return;
       if (this.loaded && !force) return;
       this.loading = true;
       try {
-        const { data } = await http.get("/drinks/get/all");
+        const data = await drinkService.getAll();
         this.all = data;
         this.loaded = true;
       } finally {
@@ -116,6 +130,40 @@ export const useDrinkStore = defineStore("drink", {
         this.loading = false;
       }
     },
+    //* CREATE
+    async create(payload: Partial<DrinkDto>) {
+      const created = await drinkService.create(payload);
+      this.all.unshift(created);
+      return created;
+    },
+    //* REPLACE
+    async replace(id: number, payload: DrinkDto) {
+      const updated = await drinkService.replace(id, payload);
+      const i = this.all.findIndex((d) => d.id === id);
+      if (i >= 0) {
+        this.all[i] = updated;
+      } else {
+        this.all.push(updated);
+      }
+      return updated;
+    },
+    //* UPDATE
+    async update(id: number, payload: Partial<DrinkDto>) {
+      const updated = await drinkService.update(id, payload);
+      const i = this.all.findIndex((d) => d.id === id);
+      if (i >= 0) {
+        this.all[i] = updated;
+      } else {
+        this.all.push(updated);
+      }
+      return updated;
+    },
+    //* REMOVE
+    async remove(id: number) {
+      await drinkService.delete(id);
+      this.all = this.all.filter((d) => d.id !== id);
+    },
+    //* RESET FILTER
     resetFilter() {
       this.search = "";
       this.category = "ALL";
@@ -124,10 +172,20 @@ export const useDrinkStore = defineStore("drink", {
       this.sortDirection = "ASC";
       this.tags = [];
       this.showOutOfStock = false;
+      this.favorites = false;
+      this.alcoholOnly = false;
     },
+    //* SET SORT
     setSort(by: DrinkSortBy, dir: DrinkSortDirection) {
       this.sortBy = by;
       this.sortDirection = dir;
+    },
+    //* RESET
+    $reset() {
+      this.all = [];
+      this.loading = false;
+      this.loaded = false;
+      this.resetFilter();
     },
   },
 });

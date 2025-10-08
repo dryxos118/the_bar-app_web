@@ -1,7 +1,7 @@
 <template>
-  <VCard class="h-100 hover-card" rounded="l" border @click="$emit('click')">
+  <VCard class="h-100 hover-card" border @click="$emit('click')">
     <VCardText class="d-flex align-items-start gap-3">
-      <VAvatar size="48" color="primary" variant="tonal">
+      <VAvatar size="48" color="primary" variant="outlined">
         <VIcon :icon="icon" size="28" />
       </VAvatar>
       <div>

@@ -1,18 +1,21 @@
 <template>
-  <div class="container-fluid p-3">
-    <DrinkFilter />
+  <div class="container-fluid p-2 p-md-3">
+    <BaseHeader
+      title="Trouver votre prochain verre..."
+      sub-title="Filtrez par catégorie, recherchez, tags, stock, ou consultez vos favoris."
+    />
 
-    <VDivider />
+    <DrinkFilter :for-admin="false" />
 
     <DrinkLoading v-if="loading" />
 
-    <DrinkEmptyState v-else-if="drink.filtered.length === 0" @reset="drink.resetFilter" />
+    <NoDrinks v-else-if="drink.filtered.length === 0" @reset="drink.resetFilter" />
 
     <div v-else>
-      <DrinkCard :drinks="pagedItems" />
+      <DrinkGrid :drinks="pagedItems" @add-to-cart="handleAddToCart" />
 
       <div class="d-flex justify-content-center mt-4">
-        <v-pagination
+        <VPagination
           v-model="localPage"
           :length="totalPages"
           :total-visible="6"
@@ -24,10 +27,19 @@
 </template>
 
 <script setup lang="ts">
-import DrinkCard from "@/components/drink/DrinkCard.vue";
-import DrinkEmptyState from "@/components/drink/DrinkEmptyState.vue";
+import BaseHeader from "@/components/common/BaseHeader.vue";
 import DrinkFilter from "@/components/drink/DrinkFilter.vue";
+import DrinkGrid from "@/components/drink/DrinkGrid.vue";
 import DrinkLoading from "@/components/drink/DrinkLoading.vue";
-import { useDrinkPagination } from "@/plugins/useDrinkPagination";
+import NoDrinks from "@/components/drink/NoDrinks.vue";
+import { useDrinkPagination } from "@/logic/composables/useDrinkPagination";
+import { useSnackbar } from "@/stores/snackbar";
+import { VPagination } from "vuetify/components";
+
 const { drink, pagedItems, totalPages, localPage, loading, onPageChange } = useDrinkPagination();
+const snackbar = useSnackbar();
+
+const handleAddToCart = (name: string) => {
+  snackbar.trigger(`Boisson ${name} ajoutée au panier`, "success");
+};
 </script>

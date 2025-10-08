@@ -5,12 +5,11 @@ import { createVuetify } from "vuetify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "vuetify/styles";
 import "@mdi/font/css/materialdesignicons.css";
-import "./styles/main.css";
+import "./index.css";
 
-import App from "./App.vue";
-import router from "./router";
-import { barDark, barLight } from "./plugins/theme";
-import "@/plugins/http";
+import App from "@/App.vue";
+import { router } from "@/router/index";
+import { barDark, barLight } from "@/logic/plugins/theme";
 import { fr } from "vuetify/locale";
 import { md3 } from "vuetify/blueprints";
 

@@ -1,10 +1,6 @@
 <template>
-  <div class="row justify-content-center text-center mb-4">
-    <h1 class="text-gradient">Trouver votre prochain verre...</h1>
-    <p class="mt-2">Filtrez par catégorie, recherchez, tags, stock, ou consultez vos favoris.</p>
-  </div>
-  <div class="row g-2 align-items-stretch toolbar mb-6">
-    <div class="col-12 col-lg-5">
+  <div class="row g-3 align-items-stretch toolbar mb-6">
+    <div class="col-12 col-md-4 col-xxl-5">
       <VTextField
         v-model="drink.search"
         variant="outlined"
@@ -18,7 +14,7 @@
 
     <div class="col-12 col-sm-6 col-lg-3">
       <VSelect
-        :items="categories.map((d) => d.key).sort()"
+        :items="categories.map((x) => x.key).sort()"
         v-model="drink.category"
         label="Catégorie"
         variant="outlined"
@@ -29,7 +25,7 @@
 
     <div class="col-12 col-sm-6 col-lg-2">
       <VSelect
-        :items="options"
+        :items="sortOptions"
         v-model="selectedKey"
         label="Trier par"
         variant="outlined"
@@ -39,28 +35,40 @@
       />
     </div>
 
-    <div class="col-12 col-lg-2 d-flex gap-2">
-      <v-btn-toggle v-model="drink.favorites" class="h-100" mandatory density="comfortable">
-        <v-btn
+    <div class="col-12 col-md-6 col-lg-3 col-xxl-2 d-flex justify-content-around gap-2">
+      <VBtnToggle
+        v-if="!forAdmin"
+        v-model="drink.favorites"
+        class="h-100"
+        mandatory
+        density="comfortable"
+      >
+        <VBtn
           :value="false"
           variant="outlined"
           icon="mdi-star-outline"
           :aria-label="'Tous'"
           size="large"
-        ></v-btn>
-        <v-btn :value="true" icon="mdi-star" :aria-label="'Favoris'" size="large"></v-btn>
-      </v-btn-toggle>
-      <v-btn
+        />
+        <VBtn :value="true" icon="mdi-star" :aria-label="'Favoris'" size="large" />
+      </VBtnToggle>
+      <VBtn
         variant="outlined"
         color="accent"
-        class="h-100"
+        class="h-100 w-50"
         prepend-icon="mdi-filter-menu-outline"
         @click="dialog = true"
       >
         Filtres
-      </v-btn>
+      </VBtn>
     </div>
-    <BaseDialog v-model="dialog" title="Filtres avancés" persistent @confirm="dialog = false">
+    <BaseDialog
+      v-if="!forAdmin"
+      v-model="dialog"
+      title="Filtres avancés"
+      persistent
+      @confirm="dialog = false"
+    >
       <template #default>
         <div class="row g-3">
           <div class="col-12">
@@ -125,37 +133,26 @@
 </template>
 
 <script setup lang="ts">
-import { categories } from "@/data/categoriesData";
+import { categories, tagItems } from "@/data/categoriesData";
+import { sortOptions, type SortKey } from "@/data/sortOptionsData";
+import { formatPrice } from "@/logic/utils/utils";
 import { useDrinkStore } from "@/stores/drink";
 import { computed, ref } from "vue";
-import BaseDialog from "../base/BaseDialog.vue";
+import BaseDialog from "../common/BaseDialog.vue";
+
+defineProps<{
+  forAdmin: boolean;
+}>();
 
 const drink = useDrinkStore();
 const dialog = ref(false);
 const priceMin = 0;
 const priceMax = 150;
 
-function clearFilter(action: VoidFunction) {
-  drink.resetFilter();
-  action();
-}
-
-const options = [
-  { title: "Nom A→Z", value: "NAME_ASC" },
-  { title: "Nom Z→A", value: "NAME_DESC" },
-  { title: "Prix croissant", value: "PRICE_ASC" },
-  { title: "Prix décroissant", value: "PRICE_DESC" },
-  { title: "Catégorie A→Z", value: "CATEGORY_ASC" },
-  { title: "Catégorie Z→A", value: "CATEGORY_DESC" },
-];
-
-type SortKey =
-  | "NAME_ASC"
-  | "NAME_DESC"
-  | "PRICE_ASC"
-  | "PRICE_DESC"
-  | "CATEGORY_ASC"
-  | "CATEGORY_DESC";
+const inStockOnly = computed<boolean>({
+  get: () => !drink.showOutOfStock,
+  set: (v) => (drink.showOutOfStock = !v),
+});
 
 const selectedKey = computed<SortKey>({
   get() {
@@ -194,20 +191,10 @@ const selectedKey = computed<SortKey>({
   },
 });
 
-const tagItems = [
-  { title: "Classic", value: "CLASSIC" },
-  { title: "Signature", value: "SIGNATURE" },
-  { title: "Sans alcool", value: "NON_ALCOHOLIC" },
-];
-
-const inStockOnly = computed<boolean>({
-  get: () => !drink.showOutOfStock,
-  set: (v) => (drink.showOutOfStock = !v),
-});
-
-function formatPrice(v: number) {
-  return `${v.toFixed(2)} €`;
-}
+const clearFilter = (action: VoidFunction) => {
+  drink.resetFilter();
+  action();
+};
 </script>
 
 <style lang="css" scoped>

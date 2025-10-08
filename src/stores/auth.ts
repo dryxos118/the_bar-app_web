@@ -1,14 +1,14 @@
-import { http } from "@/plugins/http";
-import type { AuthResponse, LoginDto, RegisterDto } from "@/models/auth";
+import type { LoginDto, RegisterDto } from "@/models/auth";
 import { defineStore } from "pinia";
-import { authService } from "@/services/authService";
+import { authService } from "@/logic/services/authService";
+import { normalizeError } from "@/logic/utils/utils";
+import { useDrinkStore } from "./drink";
+import { useUserStore } from "./user";
 
 interface AuthState {
   token: string | null;
   loading: boolean;
 }
-
-const STORAGE_KEY = "thebarapp_auth";
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
@@ -19,6 +19,7 @@ export const useAuthStore = defineStore("auth", {
     isAuthenticated: (state) => !!state.token,
   },
   actions: {
+    //* LOGIN
     async login(dto: LoginDto) {
       this.loading = true;
       try {
@@ -27,12 +28,12 @@ export const useAuthStore = defineStore("auth", {
         authService.setToken(data.token);
         return true;
       } catch (error: any) {
-        console.error(error);
-        throw Error(error.response?.data?.message ?? "Erreur");
+        throw normalizeError(error, "Erreur de connexion");
       } finally {
         this.loading = false;
       }
     },
+    //* REGISTER
     async register(dto: RegisterDto) {
       this.loading = true;
       try {
@@ -41,15 +42,23 @@ export const useAuthStore = defineStore("auth", {
         authService.setToken(data.token);
         return true;
       } catch (error: any) {
-        console.error(error);
-        throw Error(error.response?.data?.message ?? "Erreur");
+        throw normalizeError(error, "Erreur de connexion");
       } finally {
         this.loading = false;
       }
     },
+    //* LOGOUT
     logout() {
-      this.token = null;
+      this.$reset();
       authService.logout();
+    },
+    //* RESET
+    $reset() {
+      const user = useUserStore();
+      const drinks = useDrinkStore();
+      this.token = null;
+      this.loading = false;
+      drinks.$reset();
     },
   },
 });

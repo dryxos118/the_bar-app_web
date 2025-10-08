@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { VIcon } from "vuetify/components";
-</script>
-
 <template>
   <div class="no-photo">
     <VIcon icon="mdi-glass-cocktail-off" size="62" class="mb-4" />
@@ -9,7 +5,7 @@ import { VIcon } from "vuetify/components";
   </div>
 </template>
 
-<style scoped>
+<style lang="css" scoped>
 .no-photo {
   height: 180px;
   display: flex;

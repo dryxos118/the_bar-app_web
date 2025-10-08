@@ -3,11 +3,11 @@
     <div class="d-flex align-center justify-space-between mb-4">
       <div class="d-flex align-center gap-3">
         <VAvatar size="48" class="bar-avatar">
-          <v-icon>mdi-glass-cocktail</v-icon>
+          <VIcon>mdi-glass-cocktail</VIcon>
         </VAvatar>
         <div>
           <h1 class="text-h5 mb-1">The Bar App</h1>
-          <p class="text-body-2 text-medium-emphasis m-0">{{ props.message }}</p>
+          <p class="text-body-2 text-medium-emphasis m-0">{{ message }}</p>
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   message: string;
 }>();
 </script>

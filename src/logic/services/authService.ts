@@ -1,5 +1,5 @@
 import type { AuthResponse, LoginDto, RegisterDto } from "@/models/auth";
-import { http } from "@/plugins/http";
+import { http } from "@/logic/plugins/http";
 
 const STORAGE_KEY = "thebarapp_auth";
 
@@ -15,19 +15,27 @@ class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {}
   }
 
   setToken(token: string | null): void {
-    if (token) {
-      localStorage.setItem(STORAGE_KEY, token);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    try {
+      if (token) {
+        localStorage.setItem(STORAGE_KEY, token);
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    } catch {}
   }
 
   getToken(): string | null {
-    return localStorage.getItem(STORAGE_KEY);
+    try {
+      return localStorage.getItem(STORAGE_KEY);
+    } catch {
+      return null;
+    }
   }
 }
 

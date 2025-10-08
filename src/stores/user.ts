@@ -1,11 +1,12 @@
-import type { UserPreferencesDto, UserSettingsDto, UserSummaryDto } from "@/models/user";
-import { http } from "@/plugins/http";
 import { defineStore } from "pinia";
+import type { Role, UserPreferencesDto, UserSettingsDto, UserSummaryDto } from "@/models/user";
+import { usersService } from "@/logic/services/userService";
 
 interface UserState {
   me: UserSummaryDto | null;
   preferences: UserPreferencesDto | null;
   loading: boolean;
+  toggling: boolean;
 }
 
 export const useUserStore = defineStore("user", {
@@ -13,52 +14,84 @@ export const useUserStore = defineStore("user", {
     me: null,
     preferences: null,
     loading: false,
+    toggling: false,
   }),
   getters: {
-    isFavorite: (s) => (drinkId: number) => s.preferences?.favoriteDrinkIds.includes(drinkId),
-    getFavoritesIds: (s) => s.preferences?.favoriteDrinkIds ?? [],
-    username: (state) => state.me?.username || null,
-    isAdmin: (state) => state.me?.role === "ADMIN",
-    isBarman: (state) => state.me?.role === "BARMAN",
-    isUser: (state) => state.me?.role === "USER",
+    //* USER
+    getInitials: (s) => (s.me?.username ? s.me.username.slice(0, 2).toUpperCase() : "?"),
+    //* ROLE
+    isAdmin: (s) => s.me?.role === "ADMIN",
+    isBarman: (s) => s.me?.role === "BARMAN",
+    isUser: (s) => s.me?.role === "USER",
+    //* PREF
     theme: (s) => s.preferences?.settings.theme ?? "DARK",
     currency: (s) => s.preferences?.settings.currency ?? "EUR",
+    //* FAV
+    getFavoritesIds: (s) => s.preferences?.favoriteDrinkIds ?? [],
+    isFavorite: (s) => (drinkId: number) =>
+      (s.preferences?.favoriteDrinkIds ?? []).includes(drinkId),
   },
   actions: {
+    //* FETCH ME
     async fetchMe() {
       this.loading = true;
       try {
-        const { data } = await http.get<UserSummaryDto>("/me/info");
-        this.me = data;
+        this.me = await usersService.getMe();
         await this.fetchPreferences();
       } finally {
         this.loading = false;
       }
     },
+    //* FETCH PREF
     async fetchPreferences() {
-      const { data } = await http.get<UserPreferencesDto>("/me/preferences");
-      console.log(data);
+      const data = await usersService.getPreferences();
       this.preferences = data;
     },
+    //* UPDATE PREF
     async updatePreferences(dto: UserSettingsDto) {
-      const { data } = await http.patch<UserSettingsDto>("/me/settings", dto);
-      if (this.preferences) {
-        this.preferences.settings = data;
+      this.loading = true;
+      try {
+        const data = await usersService.updatePreferences(dto);
+        if (this.preferences) {
+          this.preferences.settings = data;
+        }
+      } finally {
+        this.loading = false;
       }
     },
+    //* TOGGLE FAV
     async toggleFavorite(drinkId: number) {
-      if (this.isFavorite(drinkId)) {
-        if (this.preferences) {
+      if (!this.preferences) return;
+      try {
+        await usersService.toggleFavorite(drinkId);
+        if (this.isFavorite(drinkId)) {
           this.preferences.favoriteDrinkIds = this.preferences.favoriteDrinkIds.filter(
             (id) => id !== drinkId
           );
-        }
-      } else {
-        if (this.preferences) {
+        } else {
           this.preferences.favoriteDrinkIds.push(drinkId);
         }
-      }
-      await http.post(`/me/addFavorites/${drinkId}`);
+      } catch (error: any) {}
+    },
+    //* ADMIN
+    async adminFetchAll() {
+      return usersService.getAll();
+    },
+    async adminUpdateRole(id: number, role: Role) {
+      return usersService.updateRole(id, role);
+    },
+    async adminUpdateEnabled(id: number) {
+      return usersService.updateEnabled(id);
+    },
+    async adminDeleteUser(id: number) {
+      return usersService.deleteUser(id);
+    },
+    //* RESET
+    $reset() {
+      this.me = null;
+      this.preferences = null;
+      this.loading = false;
+      this.toggling = false;
     },
   },
 });

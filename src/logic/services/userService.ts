@@ -1,5 +1,5 @@
 import type { Role, UserPreferencesDto, UserSettingsDto, UserSummaryDto } from "@/models/user";
-import { http } from "@/plugins/http";
+import { http } from "@/logic/plugins/http";
 
 class UsersService {
   async getMe() {

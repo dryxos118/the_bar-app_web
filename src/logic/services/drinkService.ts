@@ -1,5 +1,5 @@
 import type { DrinkDto } from "@/models/drink";
-import { http } from "@/plugins/http";
+import { http } from "@/logic/plugins/http";
 
 class DrinkService {
   async getAll(): Promise<DrinkDto[]> {
