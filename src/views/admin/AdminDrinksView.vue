@@ -6,9 +6,15 @@
       </VBtn>
       <VBtn variant="outlined" prepend-icon="mdi-refresh" @click="">Rafraîchir</VBtn>
     </AdminHeader>
+
+    <AdminDrinkFilter />
+
+    <AdminDrinkTable />
   </div>
 </template>
 
 <script setup lang="ts">
+import AdminDrinkFilter from "@/components/admin/AdminDrinkFilter.vue";
+import AdminDrinkTable from "@/components/admin/AdminDrinkTable.vue";
 import AdminHeader from "@/components/admin/AdminHeader.vue";
 </script>

@@ -5,7 +5,7 @@
       sub-title="Filtrez par catégorie, recherchez, tags, stock, ou consultez vos favoris."
     />
 
-    <DrinkFilter :for-admin="false" />
+    <DrinkFilter />
 
     <DrinkLoading v-if="loading" />
 

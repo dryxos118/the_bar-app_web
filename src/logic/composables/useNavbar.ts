@@ -4,7 +4,7 @@ import { useRoute } from "vue-router";
 export function useNavbar() {
   const route = useRoute();
   const isOpen = ref(false);
-  const MOBILE_BP = 810;
+  const MOBILE_BP = 1000;
   const isMobile = ref(typeof window !== "undefined" ? window.innerWidth < MOBILE_BP : false);
 
   function isActive(path: string) {
@@ -36,7 +36,7 @@ export function useNavbar() {
   watch(
     () => route.fullPath,
     () => {
-      if (window.innerWidth < 810) isOpen.value = false;
+      if (window.innerWidth < MOBILE_BP) isOpen.value = false;
     }
   );
 

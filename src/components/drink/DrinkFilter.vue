@@ -14,7 +14,9 @@
 
     <div class="col-12 col-sm-6 col-lg-3">
       <VSelect
-        :items="categories.map((x) => x.key).sort()"
+        :items="categories.sort((a, b) => a.key.localeCompare(b.key))"
+        item-title="label"
+        item-value="key"
         v-model="drink.category"
         label="Catégorie"
         variant="outlined"
@@ -36,13 +38,7 @@
     </div>
 
     <div class="col-12 col-md-6 col-lg-3 col-xxl-2 d-flex justify-content-around gap-2">
-      <VBtnToggle
-        v-if="!forAdmin"
-        v-model="drink.favorites"
-        class="h-100"
-        mandatory
-        density="comfortable"
-      >
+      <VBtnToggle v-model="drink.favorites" class="h-100" mandatory density="comfortable">
         <VBtn
           :value="false"
           variant="outlined"
@@ -62,13 +58,7 @@
         Filtres
       </VBtn>
     </div>
-    <BaseDialog
-      v-if="!forAdmin"
-      v-model="dialog"
-      title="Filtres avancés"
-      persistent
-      @confirm="dialog = false"
-    >
+    <BaseDialog v-model="dialog" title="Filtres avancés" persistent @confirm="dialog = false">
       <template #default>
         <div class="row g-3">
           <div class="col-12">
@@ -134,15 +124,11 @@
 
 <script setup lang="ts">
 import { categories, tagItems } from "@/data/categoriesData";
-import { sortOptions, type SortKey } from "@/data/sortOptionsData";
+import { fromKey, sortOptions, toKey, type SortKey } from "@/data/sortOptionsData";
 import { formatPrice } from "@/logic/utils/utils";
 import { useDrinkStore } from "@/stores/drink";
 import { computed, ref } from "vue";
 import BaseDialog from "../common/BaseDialog.vue";
-
-defineProps<{
-  forAdmin: boolean;
-}>();
 
 const drink = useDrinkStore();
 const dialog = ref(false);
@@ -156,38 +142,11 @@ const inStockOnly = computed<boolean>({
 
 const selectedKey = computed<SortKey>({
   get() {
-    switch (drink.sortBy) {
-      case "NAME":
-        return drink.sortDirection === "ASC" ? "NAME_ASC" : "NAME_DESC";
-      case "PRICE":
-        return drink.sortDirection === "ASC" ? "PRICE_ASC" : "PRICE_DESC";
-      case "CATEGORY":
-        return drink.sortDirection === "ASC" ? "CATEGORY_ASC" : "CATEGORY_DESC";
-      default:
-        return "NAME_ASC";
-    }
+    return toKey[drink.sortBy]?.[drink.sortDirection] ?? "NAME_ASC";
   },
   set(v) {
-    switch (v) {
-      case "NAME_ASC":
-        drink.setSort("NAME", "ASC");
-        break;
-      case "NAME_DESC":
-        drink.setSort("NAME", "DESC");
-        break;
-      case "PRICE_ASC":
-        drink.setSort("PRICE", "ASC");
-        break;
-      case "PRICE_DESC":
-        drink.setSort("PRICE", "DESC");
-        break;
-      case "CATEGORY_ASC":
-        drink.setSort("CATEGORY", "ASC");
-        break;
-      case "CATEGORY_DESC":
-        drink.setSort("CATEGORY", "DESC");
-        break;
-    }
+    const m = fromKey[v];
+    drink.setSort(m.by, m.dir);
   },
 });
 

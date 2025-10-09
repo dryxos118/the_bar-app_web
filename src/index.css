@@ -206,7 +206,7 @@ a {
   transform: rotate(-45deg);
   top: 18px;
 }
-@media (max-width: 810px) {
+@media (max-width: 1000px) {
   .navbar-links {
     display: flex;
     flex-direction: column;
