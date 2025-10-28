@@ -7,6 +7,7 @@ export const requiresAuth = async (
   _from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) => {
+  console.log("REQUIRE AUTH");
   const auth = useAuthStore();
   const user = useUserStore();
   if (auth.token && !user.me) {

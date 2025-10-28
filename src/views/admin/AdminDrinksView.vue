@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-2 p-md-3">
     <AdminHeader title="Gestion des boissons">
-      <VBtn variant="outlined" prepend-icon="mdi-plus" color="primary" @click="">
+      <VBtn variant="outlined" prepend-icon="mdi-plus" color="primary" @click="newDrink">
         Nouvelle boisson
       </VBtn>
       <VBtn variant="outlined" prepend-icon="mdi-refresh" @click="">Rafraîchir</VBtn>
@@ -17,4 +17,11 @@
 import AdminDrinkFilter from "@/components/admin/AdminDrinkFilter.vue";
 import AdminDrinkTable from "@/components/admin/AdminDrinkTable.vue";
 import AdminHeader from "@/components/admin/AdminHeader.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function newDrink() {
+  router.push({ name: "admin-drinks-update", params: { id: 1, mode: "EDIT" } });
+}
 </script>

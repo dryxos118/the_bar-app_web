@@ -82,7 +82,7 @@ async function onSubmit() {
     await auth.login({ usernameOrEmail: usernameOrEmail.value, password: password.value });
     snackbar.trigger("Hop, te voilà connecté !", "success");
     const redirect = (route.query.redirect as string) ?? "/";
-    await router.replace(redirect);
+    await router.push(redirect);
   } catch (e: any) {
     snackbar.trigger(e?.message ?? "Impossible de t’ouvrir la porte du bar", "error");
   } finally {

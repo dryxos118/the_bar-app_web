@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 import { guestOnly, requiresAdmin, requiresAuth } from "./guards";
+import type { Mode } from "@/models/utils";
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/",
+    path: "/auth",
     component: () => import("@/layout/PublicLayout.vue"),
     beforeEnter: guestOnly,
     children: [
@@ -35,6 +36,16 @@ const routes: RouteRecordRaw[] = [
         path: "drinks",
         name: "admin-drinks",
         component: () => import("@/views/admin/AdminDrinksView.vue"),
+      },
+      {
+        path: "drinks/update/:id?",
+        name: "admin-drinks-update",
+        component: () => import("@/views/admin/AdminUpdateDrinksView.vue"),
+        props: (r) => {
+          const id = r.params.id ? Number(r.params.id) : undefined;
+          const mode = (r.query.mode as Mode) || (id ? "EDIT" : "CREATE");
+          return { id, mode };
+        },
       },
       {
         path: "users",

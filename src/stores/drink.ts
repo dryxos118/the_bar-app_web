@@ -8,6 +8,7 @@ import {
 } from "@/models/drink";
 import { drinkService } from "@/logic/services/drinkService";
 import { useUserStore } from "./user";
+import { normalizeError } from "@/logic/utils/utils";
 
 interface DrinkState {
   all: DrinkDto[];
@@ -138,14 +139,18 @@ export const useDrinkStore = defineStore("drink", {
     },
     //* REPLACE
     async replace(id: number, payload: DrinkDto) {
-      const updated = await drinkService.replace(id, payload);
-      const i = this.all.findIndex((d) => d.id === id);
-      if (i >= 0) {
-        this.all[i] = updated;
-      } else {
-        this.all.push(updated);
+      try {
+        const updated = await drinkService.replace(id, payload);
+        const i = this.all.findIndex((d) => d.id === id);
+        if (i >= 0) {
+          this.all[i] = updated;
+        } else {
+          this.all.push(updated);
+        }
+        return updated;
+      } catch (error: any) {
+        throw normalizeError(error, "Erreur de connexion");
       }
-      return updated;
     },
     //* UPDATE
     async update(id: number, payload: Partial<DrinkDto>) {
