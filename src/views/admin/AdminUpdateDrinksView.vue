@@ -1,31 +1,24 @@
 <template>
   <div class="container-fluid py-4">
-    <AdminHeader :title="title">
-      <VChip v-if="model.id" variant="outlined" color="primary">ID #{{ model.id }}</VChip>
+    <AdminHeader :title="title" slot-css="flex-column flex-md-row">
+      <VChip v-if="model.id" rounded="xl" color="primary">ID #{{ model.id }}</VChip>
 
-      <VBtnToggle v-model="mode" divided>
-        <VBtn value="PREVIEW" :active="mode === 'PREVIEW'" :disabled="!model.id" title="Aperçu">
+      <VTabs v-model="mode" class="ms-2" density="comfortable" slider-color="primary" grow>
+        <VTab :value="'PREVIEW'" :disabled="!model.id">
           <VIcon start>mdi-eye-outline</VIcon> Preview
-        </VBtn>
-        <VBtn value="EDIT" :active="mode === 'EDIT'" :disabled="!model.id" title="Éditer">
-          <VIcon start>mdi-pencil</VIcon> Éditer
-        </VBtn>
-        <VBtn value="CREATE" :active="mode === 'CREATE'" :disabled="!!model.id" title="Créer">
-          <VIcon start>mdi-plus</VIcon> Créer
-        </VBtn>
-      </VBtnToggle>
-
-      <VBtn variant="outlined" prepend-icon="mdi-arrow-left" @click="goBack">Retour</VBtn>
+        </VTab>
+        <VTab :value="'EDIT'" :disabled="!model.id"> <VIcon start>mdi-pencil</VIcon> Éditer </VTab>
+        <VTab :value="'CREATE'" :disabled="!!model.id"> <VIcon start>mdi-plus</VIcon> Créer </VTab>
+      </VTabs>
     </AdminHeader>
 
-    <VCard class="rounded-2xl">
-      <VCardText>
-        <template v-if="loading">
-          <VSkeletonLoader type="article" />
-        </template>
+    <div class="mt-4">
+      <template v-if="loading">
+        <VSkeletonLoader type="article" height="400" />
+      </template>
 
-        <!-- PREVIEW -->
-        <template v-else-if="mode === 'PREVIEW'">
+      <VSheet v-else border rounded="xl" class="pa-4">
+        <template v-if="mode === 'PREVIEW'">
           <div class="row g-4">
             <div class="col">
               <DrinkCard :drink="model" />
@@ -33,12 +26,15 @@
           </div>
         </template>
 
-        <!-- CREATE / EDIT -->
+        <template v-else-if="mode === 'EDIT'">
+          <AdminDrinkForm v-model="model" :readonly="false" @submit="save" @cancel="goBack" />
+        </template>
+
         <template v-else>
           <AdminDrinkForm v-model="model" :readonly="false" @submit="save" @cancel="goBack" />
         </template>
-      </VCardText>
-    </VCard>
+      </VSheet>
+    </div>
   </div>
 </template>
 
@@ -49,13 +45,15 @@ import DrinkCard from "@/components/drink/DrinkCard.vue";
 import type { DrinkDto } from "@/models/drink";
 import type { Mode } from "@/models/utils";
 import { useDrinkStore } from "@/stores/drink";
+import { useSnackbar } from "@/stores/snackbar";
 import { computed, onMounted, ref, watch } from "vue";
-import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const props = defineProps<{ id?: number; mode: Mode }>();
 const router = useRouter();
 const route = useRoute();
 const store = useDrinkStore();
+const snackbar = useSnackbar();
 
 const loading = ref(false);
 const saving = ref(false);
@@ -70,7 +68,7 @@ watch(mode, (m) => {
 });
 
 const model = ref<DrinkDto>({
-  id: props.id ?? 0,
+  id: props.id,
   name: "",
   category: "COCKTAIL",
   tags: [],
@@ -91,11 +89,21 @@ const title = computed(() =>
     : "Aperçu de la boisson"
 );
 
-onMounted(() => {
+onMounted(async () => {
   if (props.id) {
     loading.value = true;
+    if (store.all.length === 0) {
+      await store.fetchAll(true);
+    }
     const data = store.byId(props.id);
+    if (!data) {
+      router.replace({ name: "admin-drinks" });
+      return;
+    }
     Object.assign(model.value, data);
+    if (mode.value === "CREATE") {
+      mode.value = "PREVIEW";
+    }
     loading.value = false;
   } else {
     mode.value === "CREATE";
@@ -103,23 +111,30 @@ onMounted(() => {
 });
 
 function goBack() {
-  const canGoBack = !!(history.state && (history.state as any).back);
-  if (canGoBack) router.back();
-  else router.push({ name: "drink-page" });
+  router.push({ name: "admin-drinks" });
 }
 
 async function save() {
   try {
     saving.value = true;
-    let saved;
+    let saved: boolean;
+
     if (!model.value.id) {
       saved = await store.create(model.value);
-      Object.assign(model.value, saved);
+      if (saved) {
+        snackbar.trigger("Boisson ajouter avec succes", "success");
+      }
     } else {
       saved = await store.replace(model.value.id, model.value);
-      Object.assign(model.value, saved);
+      if (saved) {
+        snackbar.trigger("Boisson mis a jour avec succes", "success");
+      }
     }
   } finally {
+    if (mode.value === "CREATE") {
+      goBack();
+    }
+    await store.fetchAll(true);
     saving.value = false;
   }
 }

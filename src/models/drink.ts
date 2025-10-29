@@ -16,7 +16,7 @@ export type DrinkSortBy = "NAME" | "PRICE" | "CATEGORY";
 export type DrinkSortDirection = "ASC" | "DESC";
 
 export interface DrinkDto {
-  id: number;
+  id?: number;
   name: string;
   category: DrinkCategory;
   tags: DrinkTag[];

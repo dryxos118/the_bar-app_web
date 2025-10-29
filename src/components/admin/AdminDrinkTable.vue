@@ -8,7 +8,6 @@
     fixed-header
     height="50vh"
     item-key="id"
-    class="elevation-1 mt-2"
     hide-default-footer
   >
     <template v-slot:loading>
@@ -46,23 +45,23 @@
       <VBtn
         variant="text"
         size="small"
-        icon="mdi-pencil"
-        color="primary"
-        @click="$emit('edit', item.id)"
+        icon="mdi-eye"
+        color="secondary"
+        @click="$emit('preview', item.id!)"
       />
       <VBtn
         variant="text"
         size="small"
-        icon="mdi-eye"
-        color="secondary"
-        @click="$emit('preview', item.id)"
+        icon="mdi-pencil"
+        color="primary"
+        @click="$emit('edit', item.id!)"
       />
       <VBtn
         variant="text"
         size="small"
         icon="mdi-delete"
         color="error"
-        @click="$emit('delete', item.id)"
+        @click="$emit('delete', item.id!)"
       />
     </template>
 
@@ -73,26 +72,20 @@
       </div>
     </template>
   </VDataTable>
-
-  <div class="d-flex justify-content-around align-items-center mt-2">
-    <div>Page {{ localPage }} / {{ totalPages }}</div>
-    <VPagination
-      v-model="localPage"
-      :length="totalPages"
-      :total-visible="6"
-      rounded="xl"
-      @update:modelValue="onPageChange"
-    />
-  </div>
 </template>
 
 <script setup lang="ts">
 import { categories } from "@/data/categoriesData";
-import { useDrinkPagination } from "@/logic/composables/useDrinkPagination";
 import { formatPrice } from "@/logic/utils/utils";
+import type { DrinkDto } from "@/models/drink";
 
-const { drink, pageSize, localPage, totalPages, pagedItems, loading, onPageChange } =
-  useDrinkPagination();
+const props = defineProps<{ pageSize: number; pagedItems: DrinkDto[]; loading: boolean }>();
+
+const emit = defineEmits<{
+  (e: "edit", id: number): void;
+  (e: "preview", id: number): void;
+  (e: "delete", id: number): void;
+}>();
 
 const headers = [
   { title: "Nom", value: "name", width: 260 },

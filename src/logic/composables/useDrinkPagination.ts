@@ -50,6 +50,10 @@ export function useDrinkPagination() {
     { deep: true }
   );
 
+  async function refreshAll() {
+    await drink.fetchAll(true);
+  }
+
   function onPageChange(p: number) {
     updateQuery({ page: p });
   }
@@ -74,5 +78,6 @@ export function useDrinkPagination() {
     loading,
     onPageChange,
     updateQuery,
+    refreshAll,
   };
 }

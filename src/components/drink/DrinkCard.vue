@@ -14,12 +14,12 @@
       <div class="d-flex justify-content-between align-items-center">
         <span class="fw-semibold">{{ formatPrice(drink.price) }}</span>
         <VIcon
-          :color="user.isFavorite(drink.id) ? 'red' : 'grey'"
+          :color="user.isFavorite(drink.id!) ? 'red' : 'grey'"
           size="24"
           class="cursor-pointer"
-          @click="user.toggleFavorite(drink.id)"
+          @click="user.toggleFavorite(drink.id!)"
         >
-          {{ user.isFavorite(drink.id) ? "mdi-heart" : "mdi-heart-outline" }}
+          {{ user.isFavorite(drink.id!) ? "mdi-heart" : "mdi-heart-outline" }}
         </VIcon>
       </div>
       <div v-if="drink.tags.length" class="mt-2">

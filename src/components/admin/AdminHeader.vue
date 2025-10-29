@@ -4,7 +4,7 @@
       <VIcon class="me-2" color="primary">mdi-shield-crown</VIcon>
       {{ title }}
     </h2>
-    <div class="d-flex align-items-center gap-2">
+    <div :class="['d-flex align-items-center gap-2', slotCss]">
       <slot />
     </div>
   </div>
@@ -12,5 +12,5 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{ title: string }>();
+defineProps<{ title: string; slotCss?: string }>();
 </script>

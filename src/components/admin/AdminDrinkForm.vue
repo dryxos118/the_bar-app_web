@@ -1,6 +1,6 @@
 <template>
   <VForm ref="formRef" @submit.prevent="onSubmit">
-    <div class="row g-3">
+    <div class="row justify-content-center g-3">
       <div class="col-12 col-md-6">
         <VTextField
           v-model="local.name"
@@ -8,9 +8,12 @@
           label="Nom"
           variant="outlined"
           :rules="rules.required"
+          clearable
+          prepend-inner-icon="mdi-form-textbox"
         />
       </div>
-      <div class="col-6 col-md-3">
+
+      <div class="col-12 col-md-3">
         <VTextField
           v-model.number="local.price"
           :readonly="readonly"
@@ -20,26 +23,56 @@
           step="0.1"
           variant="outlined"
           :rules="rules.number"
-        />
-      </div>
-      <div class="col-6 col-md-3">
-        <VSelect
-          v-model="local.category"
-          item-title="label"
-          item-value="key"
-          :readonly="readonly"
-          :items="categoryKeys"
-          label="Catégorie"
-          variant="outlined"
-          :rules="rules.required"
+          prepend-inner-icon="mdi-currency-eur"
         />
       </div>
 
-      <div class="col-6 col-md-3">
-        <VSwitch v-model="local.hasAlcohol" :disabled="readonly" inset label="Alcool" />
+      <div class="col-12 col-md-3">
+        <VSelect
+          v-model="local.category"
+          :items="categoryItems"
+          item-title="label"
+          item-value="key"
+          :readonly="readonly"
+          label="Catégorie"
+          variant="outlined"
+          :rules="rules.required"
+          clearable
+          prepend-inner-icon="mdi-tag-outline"
+        />
       </div>
-      <div class="col-6 col-md-3">
-        <VSwitch v-model="local.outOfStock" :disabled="readonly" inset label="Rupture" />
+
+      <div class="col-12 col-md-3">
+        <VTextField
+          v-model="local.glass"
+          :readonly="readonly"
+          label="Verre"
+          variant="outlined"
+          clearable
+          prepend-inner-icon="mdi-glass-cocktail"
+        />
+      </div>
+
+      <div class="col-12 col-md-3">
+        <VSelect
+          v-model="local.tags"
+          :items="tagItems"
+          label="Tags"
+          multiple
+          chips
+          closable-chips
+          variant="outlined"
+          hide-details
+          class="w-100"
+          prepend-inner-icon="mdi-tag-multiple-outline"
+        />
+      </div>
+
+      <div class="col-6 col-md-3 d-flex justify-content-center">
+        <VSwitch v-model="local.hasAlcohol" :disabled="readonly" color="accent" label="Alcool" />
+      </div>
+      <div class="col-6 col-md-3 d-flex justify-content-center">
+        <VSwitch v-model="local.outOfStock" :disabled="readonly" color="accent" label="Rupture" />
       </div>
 
       <div class="col-12">
@@ -47,8 +80,52 @@
           v-model="local.image"
           :readonly="readonly"
           label="URL image"
+          placeholder="https://…"
           variant="outlined"
+          clearable
+          prepend-inner-icon="mdi-image-outline"
+          :rules="rules.urlOptional"
         />
+      </div>
+
+      <div class="col-12">
+        <VTextField
+          v-model="ingredientNew"
+          label="Ajouter un ingrédient"
+          variant="outlined"
+          hide-details
+          prepend-inner-icon="mdi-plus"
+          @keyup.enter="addIngredient"
+          clearable
+        />
+
+        <!-- En-tête liste -->
+        <div class="d-flex align-items-center justify-content-between mt-2 mb-3">
+          <span class="fw-600">Ingrédients :</span>
+          <VBtn
+            v-if="(local.ingredients?.length || 0) > 0"
+            size="small"
+            variant="outlined"
+            prepend-icon="mdi-close-circle-outline"
+            @click="clearIngredients"
+          >
+            Tout effacer
+          </VBtn>
+        </div>
+
+        <!-- Chips ingrédients -->
+        <div class="d-flex flex-wrap gap-2">
+          <VChip
+            v-for="(ing, i) in local.ingredients"
+            :key="ing + i"
+            rounded="xl"
+            closable
+            @click:close="removeIngredient(i)"
+            prepend-icon="mdi-silverware-fork-knife"
+          >
+            {{ ing }}
+          </VChip>
+        </div>
       </div>
 
       <div class="col-12">
@@ -59,6 +136,8 @@
           variant="outlined"
           rows="3"
           auto-grow
+          clearable
+          prepend-inner-icon="mdi-text"
         />
       </div>
 
@@ -73,7 +152,7 @@
 </template>
 
 <script setup lang="ts">
-import { categories } from "@/data/categoriesData";
+import { categories, tagItems } from "@/data/categoriesData";
 import type { DrinkDto } from "@/models/drink";
 import { ref, reactive, watch, computed } from "vue";
 import type { VForm } from "vuetify/components";
@@ -87,8 +166,9 @@ const emit = defineEmits<{
 
 const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const local = reactive<DrinkDto>({ ...props.modelValue });
+const categoryItems = computed(() => categories.filter((c) => c.key !== "ALL"));
 
-const categoryKeys = computed(() => categories.filter((c) => c.key !== "ALL"));
+const ingredientNew = ref("");
 
 watch(
   () => props.modelValue,
@@ -98,17 +178,58 @@ watch(
 watch(local, (v) => emit("update:modelValue", { ...v }), { deep: true });
 
 const rules = {
-  required: [(v: string) => !!v || "Requis"],
+  required: [(v: any) => !!v || "Requis"],
   number: [(v: any) => v === null || v === "" || Number(v) >= 0 || "≥ 0 requis"],
+  urlOptional: [
+    (v: any) => {
+      if (!v) return true;
+      try {
+        new URL(v);
+        return true;
+      } catch {
+        return "URL invalide";
+      }
+    },
+  ],
+  ingredients: [(v: string[]) => (v?.length ?? 0) > 0 || "Au moins 1 ingrédient"],
 };
 
+function normalizeIngredient(s: string) {
+  const t = (s || "").trim();
+  if (!t) return "";
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function addIngredient() {
+  const v = normalizeIngredient(ingredientNew.value);
+  if (!v) return;
+  if (!local.ingredients.includes(v)) local.ingredients.push(v);
+  ingredientNew.value = "";
+}
+
+function clearIngredients() {
+  local.ingredients = [];
+}
+
+function removeIngredient(i: number) {
+  local.ingredients.splice(i, 1);
+}
+
 async function onSubmit() {
-  const isOk = await formRef.value?.validate();
-  if (isOk?.valid) {
-    console.log("FORM INVALIDE");
+  const r = await formRef.value?.validate();
+  if (!r?.valid) {
+    console.warn("Formulaire invalide");
     return;
   }
-  console.log("submit");
   emit("submit", { ...local });
 }
 </script>
+
+<style scoped>
+.fw-600 {
+  font-weight: 600;
+}
+.chips-wrap {
+  min-height: 36px;
+}
+</style>

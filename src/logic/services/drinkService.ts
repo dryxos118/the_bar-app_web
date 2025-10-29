@@ -12,7 +12,7 @@ class DrinkService {
     return data;
   }
 
-  async create(payload: Partial<DrinkDto>) {
+  async create(payload: Partial<DrinkDto>): Promise<boolean> {
     const { data } = await http.post("/drinks/create", payload);
     return data;
   }

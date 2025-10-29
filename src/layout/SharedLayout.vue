@@ -2,7 +2,7 @@
   <VApp>
     <Snackbar />
     <slot />
-    <VMain class="page py-6">
+    <VMain class="page">
       <RouterView />
     </VMain>
     <Footer />

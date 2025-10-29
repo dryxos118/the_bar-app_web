@@ -81,7 +81,7 @@ export const useDrinkStore = defineStore("drink", {
       //* FAVORITE
       if (state.favorites) {
         const user = useUserStore();
-        list = list.filter((d) => user.isFavorite(d.id));
+        list = list.filter((d) => user.isFavorite(d.id ?? 0));
       }
       //* SEARCH
       const q = state.search.trim().toLowerCase();
@@ -134,7 +134,6 @@ export const useDrinkStore = defineStore("drink", {
     //* CREATE
     async create(payload: Partial<DrinkDto>) {
       const created = await drinkService.create(payload);
-      this.all.unshift(created);
       return created;
     },
     //* REPLACE
