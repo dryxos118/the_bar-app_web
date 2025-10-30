@@ -40,6 +40,6 @@ const { drink, pagedItems, totalPages, localPage, loading, onPageChange } = useD
 const snackbar = useSnackbar();
 
 const handleAddToCart = (name: string) => {
-  snackbar.trigger(`Boisson ${name} ajoutée au panier`, "success");
+  snackbar.triggerSucces(`Boisson ${name} ajoutée au panier`);
 };
 </script>

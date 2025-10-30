@@ -101,9 +101,9 @@ async function onSubmit() {
       password: password.value,
       role: "USER",
     });
-    snackbar.trigger("Inscription réussie ! Bienvenue parmi les habitués", "success");
+    snackbar.triggerSucces("Inscription réussie ! Bienvenue parmi les habitués");
   } catch (e: any) {
-    snackbar.trigger(e?.message ?? "", "error");
+    snackbar.triggerError(e?.message ?? "Erreur");
   } finally {
     loading.value = false;
   }

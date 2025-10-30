@@ -17,18 +17,19 @@ class DrinkService {
     return data;
   }
 
-  async replace(id: number, payload: DrinkDto) {
+  async replace(id: number, payload: DrinkDto): Promise<boolean> {
     const { data } = await http.put(`/drinks/replace/${id}`, payload);
     return data;
   }
 
-  async update(id: number, payload: Partial<DrinkDto>) {
+  async update(id: number, payload: Partial<DrinkDto>): Promise<boolean> {
     const { data } = await http.patch(`/drinks/update/${id}`, payload);
     return data;
   }
 
-  async delete(id: number): Promise<void> {
-    await http.delete(`/drinks/delete/${id}`);
+  async delete(id: number): Promise<boolean> {
+    const { data } = await http.delete(`/drinks/delete/${id}`);
+    return data;
   }
 }
 

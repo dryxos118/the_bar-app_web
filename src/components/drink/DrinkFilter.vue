@@ -6,6 +6,7 @@
         variant="outlined"
         density="comfortable"
         prepend-inner-icon="mdi-magnify"
+        :label="drink.search.length >= 1 ? 'Recherche' : undefined"
         placeholder="Rechercher (nom, ingrédient)"
         hide-details
         class="w-100 h-100"
@@ -161,6 +162,5 @@ const clearFilter = (action: VoidFunction) => {
   display: flex;
   flex-wrap: wrap;
   align-content: center;
-  justify-content: center;
 }
 </style>

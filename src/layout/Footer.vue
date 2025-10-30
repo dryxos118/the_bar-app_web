@@ -14,10 +14,6 @@
   </footer>
 </template>
 
-<script setup lang="ts">
-//
-</script>
-
 <style scoped>
 .footer-bar {
   background-color: var(--nav-bg);

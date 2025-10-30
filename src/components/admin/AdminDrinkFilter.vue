@@ -57,17 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { categories, tagItems } from "@/data/categoriesData";
+import { categories } from "@/data/categoriesData";
 import { fromKey, sortOptions, toKey, type SortKey } from "@/data/sortOptionsData";
 import { useDrinkStore } from "@/stores/drink";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 
 const drink = useDrinkStore();
-
-const inStockOnly = computed<boolean>({
-  get: () => !drink.showOutOfStock,
-  set: (v) => (drink.showOutOfStock = !v),
-});
 
 const selectedKey = computed<SortKey>({
   get() {

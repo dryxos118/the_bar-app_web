@@ -15,11 +15,32 @@ export const useSnackbar = defineStore("snackbar", {
     timeout: 3000,
   }),
   actions: {
-    //* TRIGGER
-    trigger(message: string, color: SnackbarState["color"] = "info", timeout = 3000) {
+    //* TRIGGER INFO
+    triggerInfo(message: string) {
       this.message = message;
-      this.color = color;
-      this.timeout = timeout;
+      this.color = "info";
+      this.timeout = 3000;
+      this.show = true;
+    },
+    //* TRIGGER SUCCESS
+    triggerSucces(message: string) {
+      this.message = message;
+      this.color = "success";
+      this.timeout = 3000;
+      this.show = true;
+    },
+    //* TRIGGER WARN
+    triggerWarn(message: string) {
+      this.message = message;
+      this.color = "warning";
+      this.timeout = 3500;
+      this.show = true;
+    },
+    //* TRIGGER ERROR
+    triggerError(message: string) {
+      this.message = message;
+      this.color = "error";
+      this.timeout = 4000;
       this.show = true;
     },
     //* CLOSE

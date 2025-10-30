@@ -54,7 +54,8 @@ export const useAuthStore = defineStore("auth", {
     },
     //* RESET
     $reset() {
-      const user = useUserStore();
+      // TODO :
+      //const user = useUserStore();
       const drinks = useDrinkStore();
       this.token = null;
       this.loading = false;

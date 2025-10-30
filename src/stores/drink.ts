@@ -126,6 +126,8 @@ export const useDrinkStore = defineStore("drink", {
         const data = await drinkService.getAll();
         this.all = data;
         this.loaded = true;
+      } catch (error: any) {
+        throw normalizeError(error, "Erreur");
       } finally {
         await new Promise((r) => setTimeout(r, 1000));
         this.loading = false;
@@ -133,39 +135,54 @@ export const useDrinkStore = defineStore("drink", {
     },
     //* CREATE
     async create(payload: Partial<DrinkDto>) {
-      const created = await drinkService.create(payload);
-      return created;
+      try {
+        const created = await drinkService.create(payload);
+        return created;
+      } catch (error: any) {
+        throw normalizeError(error, "Erreur");
+      }
     },
     //* REPLACE
     async replace(id: number, payload: DrinkDto) {
       try {
         const updated = await drinkService.replace(id, payload);
-        const i = this.all.findIndex((d) => d.id === id);
-        if (i >= 0) {
-          this.all[i] = updated;
-        } else {
-          this.all.push(updated);
-        }
+        // TODO :
+        //  const i = this.all.findIndex((d) => d.id === id);
+        // if (i >= 0) {
+        //   this.all[i] = updated;
+        // } else {
+        //   this.all.push(updated);
+        // }
         return updated;
       } catch (error: any) {
-        throw normalizeError(error, "Erreur de connexion");
+        throw normalizeError(error, "Erreur");
       }
     },
     //* UPDATE
     async update(id: number, payload: Partial<DrinkDto>) {
-      const updated = await drinkService.update(id, payload);
-      const i = this.all.findIndex((d) => d.id === id);
-      if (i >= 0) {
-        this.all[i] = updated;
-      } else {
-        this.all.push(updated);
+      try {
+        const updated = await drinkService.update(id, payload);
+        // TODO :
+        // const i = this.all.findIndex((d) => d.id === id);
+        // if (i >= 0) {
+        //   this.all[i] = updated;
+        // } else {
+        //   this.all.push(updated);
+        // }
+        return updated;
+      } catch (error: any) {
+        throw normalizeError(error, "Erreur");
       }
-      return updated;
     },
     //* REMOVE
     async remove(id: number) {
-      await drinkService.delete(id);
-      this.all = this.all.filter((d) => d.id !== id);
+      try {
+        const updated = await drinkService.delete(id);
+        this.all = this.all.filter((d) => d.id !== id);
+        return updated;
+      } catch (error: any) {
+        throw normalizeError(error, "Erreur");
+      }
     },
     //* RESET FILTER
     resetFilter() {

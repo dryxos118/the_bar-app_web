@@ -36,8 +36,14 @@
     </template>
 
     <template #item.outOfStock="{ item }">
-      <VChip size="x-small" variant="flat">
+      <VChip color="primary" size="small" rounded="xl">
         {{ item.outOfStock ? "Rupture" : "En stock" }}
+      </VChip>
+    </template>
+
+    <template #item.hasAlcohol="{ item }">
+      <VChip color="primary" size="small" rounded="xl">
+        {{ item.hasAlcohol ? "Avec alcool" : "sans alcool" }}
       </VChip>
     </template>
 
@@ -47,7 +53,7 @@
         size="small"
         icon="mdi-eye"
         color="secondary"
-        @click="$emit('preview', item.id!)"
+        @click="$emit('preview', item.name)"
       />
       <VBtn
         variant="text"
@@ -61,7 +67,7 @@
         size="small"
         icon="mdi-delete"
         color="error"
-        @click="$emit('delete', item.id!)"
+        @click="$emit('delete', item.id!, item.name)"
       />
     </template>
 
@@ -83,16 +89,16 @@ const props = defineProps<{ pageSize: number; pagedItems: DrinkDto[]; loading: b
 
 const emit = defineEmits<{
   (e: "edit", id: number): void;
-  (e: "preview", id: number): void;
-  (e: "delete", id: number): void;
+  (e: "preview", name: string): void;
+  (e: "delete", id: number, name: string): void;
 }>();
 
 const headers = [
   { title: "Nom", value: "name", width: 260 },
   { title: "Catégorie", value: "category", width: 160 },
   { title: "Prix", value: "price", width: 110 },
-  { title: "Stock", value: "outOfStock", width: 120 },
-  { title: "Alcool", value: "hasAlcohol", width: 120 },
+  { title: "Stock", value: "outOfStock", width: 120, align: "center" as const },
+  { title: "Alcool", value: "hasAlcohol", width: 120, align: "center" as const },
   { title: "Actions", value: "actions", width: "20%", align: "center" as const },
 ];
 </script>

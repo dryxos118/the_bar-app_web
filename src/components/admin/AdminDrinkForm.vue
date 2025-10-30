@@ -4,7 +4,6 @@
       <div class="col-12 col-md-6">
         <VTextField
           v-model="local.name"
-          :readonly="readonly"
           label="Nom"
           variant="outlined"
           :rules="rules.required"
@@ -16,7 +15,6 @@
       <div class="col-12 col-md-3">
         <VTextField
           v-model.number="local.price"
-          :readonly="readonly"
           label="Prix (€)"
           type="number"
           min="0"
@@ -33,7 +31,6 @@
           :items="categoryItems"
           item-title="label"
           item-value="key"
-          :readonly="readonly"
           label="Catégorie"
           variant="outlined"
           :rules="rules.required"
@@ -45,7 +42,6 @@
       <div class="col-12 col-md-3">
         <VTextField
           v-model="local.glass"
-          :readonly="readonly"
           label="Verre"
           variant="outlined"
           clearable
@@ -69,16 +65,15 @@
       </div>
 
       <div class="col-6 col-md-3 d-flex justify-content-center">
-        <VSwitch v-model="local.hasAlcohol" :disabled="readonly" color="accent" label="Alcool" />
+        <VSwitch v-model="local.hasAlcohol" color="accent" label="Alcool" />
       </div>
       <div class="col-6 col-md-3 d-flex justify-content-center">
-        <VSwitch v-model="local.outOfStock" :disabled="readonly" color="accent" label="Rupture" />
+        <VSwitch v-model="local.outOfStock" color="accent" label="Rupture" />
       </div>
 
       <div class="col-12">
         <VTextField
           v-model="local.image"
-          :readonly="readonly"
           label="URL image"
           placeholder="https://…"
           variant="outlined"
@@ -99,7 +94,6 @@
           clearable
         />
 
-        <!-- En-tête liste -->
         <div class="d-flex align-items-center justify-content-between mt-2 mb-3">
           <span class="fw-600">Ingrédients :</span>
           <VBtn
@@ -113,8 +107,7 @@
           </VBtn>
         </div>
 
-        <!-- Chips ingrédients -->
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2 mb-3">
           <VChip
             v-for="(ing, i) in local.ingredients"
             :key="ing + i"
@@ -131,7 +124,6 @@
       <div class="col-12">
         <VTextarea
           v-model="local.instruction"
-          :readonly="readonly"
           label="Préparation"
           variant="outlined"
           rows="3"
@@ -141,23 +133,42 @@
         />
       </div>
 
-      <div v-if="!readonly" class="col-12 d-flex gap-2 justify-content-end">
-        <VBtn variant="text" @click="$emit('cancel')">Annuler</VBtn>
-        <VBtn color="primary" variant="outlined" @click="onSubmit">
+      <div class="col-12 d-flex gap-2 justify-content-end">
+        <VBtn color="accent" variant="outlined" @click="onCancel">Annuler</VBtn>
+        <VBtn color="primary" variant="outlined" :disabled="!isDirty" @click="onReset">
+          <VIcon start>mdi-refresh</VIcon> Reset
+        </VBtn>
+        <VBtn color="primary" variant="outlined" :disabled="!isDirty" @click="onSubmit">
           <VIcon start>mdi-content-save</VIcon> Enregistrer
         </VBtn>
       </div>
     </div>
   </VForm>
+
+  <BaseDialog
+    v-model="openDialog"
+    title="Quitter sans enregistrer ?"
+    ok-text="Oui, quitter"
+    cancel-text="Non, je reste"
+    persistent
+    @confirm="onConfirm"
+  >
+    <template #default>
+      Vous êtes sur le point de quitter sans sauvegarder vos modifications.<br />
+      <strong>Les changements non enregistrés seront perdus.</strong><br />
+    </template>
+  </BaseDialog>
 </template>
 
 <script setup lang="ts">
 import { categories, tagItems } from "@/data/categoriesData";
 import type { DrinkDto } from "@/models/drink";
-import { ref, reactive, watch, computed } from "vue";
+import type { Mode } from "@/models/utils";
+import { ref, reactive, watch, computed, onMounted } from "vue";
 import type { VForm } from "vuetify/components";
+import BaseDialog from "../common/BaseDialog.vue";
 
-const props = defineProps<{ modelValue: DrinkDto; readonly?: boolean }>();
+const props = defineProps<{ modelValue: DrinkDto; mode: Mode }>();
 const emit = defineEmits<{
   (e: "update:modelValue", v: DrinkDto): void;
   (e: "submit", v: DrinkDto): void;
@@ -168,6 +179,12 @@ const formRef = ref<InstanceType<typeof VForm> | null>(null);
 const local = reactive<DrinkDto>({ ...props.modelValue });
 const categoryItems = computed(() => categories.filter((c) => c.key !== "ALL"));
 
+const initialJson = ref<string>("");
+const isDirty = computed(() => initialJson.value !== JSON.stringify(local));
+onMounted(() => {
+  initialJson.value = JSON.stringify(local);
+});
+const openDialog = ref(false);
 const ingredientNew = ref("");
 
 watch(
@@ -215,21 +232,31 @@ function removeIngredient(i: number) {
   local.ingredients.splice(i, 1);
 }
 
+function onCancel() {
+  if (isDirty.value) {
+    openDialog.value = true;
+  } else {
+    Object.assign(local, JSON.parse(initialJson.value));
+    emit("cancel");
+  }
+}
+
+function onConfirm() {
+  Object.assign(local, JSON.parse(initialJson.value));
+  emit("cancel");
+}
+
+function onReset() {
+  Object.assign(local, JSON.parse(initialJson.value));
+}
+
 async function onSubmit() {
   const r = await formRef.value?.validate();
   if (!r?.valid) {
     console.warn("Formulaire invalide");
     return;
   }
+  initialJson.value = JSON.stringify(local);
   emit("submit", { ...local });
 }
 </script>
-
-<style scoped>
-.fw-600 {
-  font-weight: 600;
-}
-.chips-wrap {
-  min-height: 36px;
-}
-</style>

@@ -80,11 +80,11 @@ async function onSubmit() {
   try {
     loading.value = true;
     await auth.login({ usernameOrEmail: usernameOrEmail.value, password: password.value });
-    snackbar.trigger("Hop, te voilà connecté !", "success");
+    snackbar.triggerSucces("Hop, te voilà connecté !");
     const redirect = (route.query.redirect as string) ?? "/";
     await router.push(redirect);
   } catch (e: any) {
-    snackbar.trigger(e?.message ?? "Impossible de t’ouvrir la porte du bar", "error");
+    snackbar.triggerError(e?.message ?? "Impossible de t’ouvrir la porte du bar");
   } finally {
     loading.value = false;
   }

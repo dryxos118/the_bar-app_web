@@ -23,8 +23,8 @@
       <VDivider v-if="showActions" />
       <footer v-if="showActions" class="px-4 py-3 d-flex justify-end gap-2">
         <slot name="actions" :confirm="confirm" :cancel="cancel" :close="close" :loading="loading">
-          <v-btn variant="text" :disabled="loading" @click="cancel">{{ cancelText }}</v-btn>
-          <v-btn color="primary" :loading="loading" @click="confirm">{{ okText }}</v-btn>
+          <VBtn variant="text" :disabled="loading" @click="cancel">{{ cancelText }}</VBtn>
+          <VBtn color="primary" :loading="loading" @click="confirm">{{ okText }}</VBtn>
         </slot>
       </footer>
     </VCard>
@@ -53,13 +53,13 @@ const props = withDefaults(
     cancelText: "Annuler",
     loading: false,
     persistent: false,
-    maxWidth: 480,
+    maxWidth: 580,
   }
 );
 
 const emit = defineEmits<{
   (e: "update:modelValue", v: boolean): void;
-  (e: "confirm", data?: any): void;
+  (e: "confirm"): void;
   (e: "cancel"): void;
   (e: "after-leave"): void;
 }>();
@@ -76,8 +76,8 @@ function cancel() {
   emit("cancel");
   close();
 }
-function confirm(data?: any) {
-  emit("confirm", data);
+function confirm() {
+  emit("confirm");
 }
 function afterLeave() {
   emit("after-leave");

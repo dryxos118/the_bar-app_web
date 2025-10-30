@@ -1,1 +1,1 @@
-export type Mode = "CREATE" | "EDIT" | "PREVIEW";
+export type Mode = "CREATE" | "EDIT";

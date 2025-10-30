@@ -1,10 +1,12 @@
 import type { DrinkCategory } from "@/models/drink";
 import { useDrinkStore } from "@/stores/drink";
+import { useSnackbar } from "@/stores/snackbar";
 import { computed, onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 
 export function useDrinkPagination() {
   const drink = useDrinkStore();
+  const snackbar = useSnackbar();
   const route = useRoute();
   const router = useRouter();
 
@@ -16,9 +18,22 @@ export function useDrinkPagination() {
     return drink.filtered.slice(start, start + pageSize.value);
   });
   const loading = computed(() => drink.loading);
+  const notResetFilter = ref(false);
 
-  onMounted(() => {
-    drink.fetchAll();
+  onMounted(async () => {
+    try {
+      await drink.fetchAll();
+    } catch (e: any) {
+      snackbar.triggerError(e?.message ?? "Erreur");
+    }
+  });
+
+  onBeforeRouteLeave(() => {
+    if (notResetFilter.value) {
+      notResetFilter.value = false;
+    } else {
+      drink.resetFilter();
+    }
   });
 
   watch(
@@ -51,7 +66,11 @@ export function useDrinkPagination() {
   );
 
   async function refreshAll() {
-    await drink.fetchAll(true);
+    try {
+      await drink.fetchAll(true);
+    } catch (e: any) {
+      snackbar.triggerError(e?.message ?? "Erreur");
+    }
   }
 
   function onPageChange(p: number) {
@@ -76,6 +95,7 @@ export function useDrinkPagination() {
     totalPages,
     pagedItems,
     loading,
+    notResetFilter,
     onPageChange,
     updateQuery,
     refreshAll,

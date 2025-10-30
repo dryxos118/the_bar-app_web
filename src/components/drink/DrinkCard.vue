@@ -1,13 +1,13 @@
 <template>
   <VCard elevation="4" border class="drinks-card h-100">
-    <VImg v-if="drink.image" :src="drink.image" height="180" cover />
+    <VImg v-if="drink.image" :src="drink.image" height="180" />
     <DrinkNoImg v-else />
 
     <VDivider class="my-1" />
 
     <VCardTitle class="d-flex justify-content-between align-items-center">
       <span class="fw-semibold">{{ drink.name }}</span>
-      <VChip size="small" variant="flat">{{ drink.category }}</VChip>
+      <VChip size="small" rounded="xl" color="primary">{{ drink.category }}</VChip>
     </VCardTitle>
 
     <VCardText class="pt-0">
@@ -23,11 +23,11 @@
         </VIcon>
       </div>
       <div v-if="drink.tags.length" class="mt-2">
-        <VIcon start size="14" icon="mdi-tag-multiple" class="me-1" />
+        <VIcon start size="16" icon="mdi-tag-multiple" class="me-1" />
         {{ drink.tags.join(", ") }}
       </div>
       <div v-if="drink.ingredients.length" class="mt-2">
-        <VIcon start size="14" icon="mdi-silverware-fork-knife" class="me-1" />
+        <VIcon start size="16" icon="mdi-silverware-fork-knife" class="me-1" />
         {{ drink.ingredients.join(", ") }}
       </div>
     </VCardText>
