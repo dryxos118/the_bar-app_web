@@ -5,9 +5,17 @@
   </div>
 </template>
 
+<script setup lang="ts">
+import { computed, ref } from "vue";
+
+const props = withDefaults(defineProps<{ size?: number }>(), { size: 180 });
+
+const sizePx = computed(() => `${props.size}px`);
+</script>
+
 <style lang="css" scoped>
 .no-photo {
-  height: 180px;
+  height: v-bind(sizePx);
   display: flex;
   flex-direction: column;
   align-items: center;

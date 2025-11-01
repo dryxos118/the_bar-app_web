@@ -133,7 +133,7 @@
         />
       </div>
 
-      <div class="col-12 d-flex gap-2 justify-content-end">
+      <div class="col-12 d-flex flex-column-reverse flex-md-row gap-2 justify-content-end">
         <VBtn color="accent" variant="outlined" @click="onCancel">Annuler</VBtn>
         <VBtn color="primary" variant="outlined" :disabled="!isDirty" @click="onReset">
           <VIcon start>mdi-refresh</VIcon> Reset
@@ -166,7 +166,7 @@ import type { DrinkDto } from "@/models/drink";
 import type { Mode } from "@/models/utils";
 import { ref, reactive, watch, computed, onMounted } from "vue";
 import type { VForm } from "vuetify/components";
-import BaseDialog from "../common/BaseDialog.vue";
+import BaseDialog from "../../common/BaseDialog.vue";
 
 const props = defineProps<{ modelValue: DrinkDto; mode: Mode }>();
 const emit = defineEmits<{

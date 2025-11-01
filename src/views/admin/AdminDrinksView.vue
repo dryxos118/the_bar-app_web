@@ -1,23 +1,49 @@
 <template>
   <div class="container-fluid p-2 p-md-3">
     <AdminHeader title="Gestion des boissons">
-      <VBtn variant="outlined" prepend-icon="mdi-plus" color="primary" @click="newDrink">
-        Nouvelle boisson
-      </VBtn>
-      <VBtn variant="outlined" prepend-icon="mdi-refresh" @click="refreshAll">Rafraîchir</VBtn>
+      <div class="d-flex flex-column flex-md-row align-items-center gap-3">
+        <VBtnToggle
+          color="primary"
+          variant="outlined"
+          v-model="cardViewPref"
+          :disabled="toggleDisabled"
+          density="comfortable"
+        >
+          <VBtn :value="true" prepend-icon="mdi-id-card">Card</VBtn>
+          <VBtn :value="false" prepend-icon="mdi-table-large">Table</VBtn>
+        </VBtnToggle>
+
+        <div class="d-flex gap-3">
+          <VBtn variant="outlined" prepend-icon="mdi-plus" color="primary" @click="newDrink">
+            Nouvelle boisson
+          </VBtn>
+          <VBtn variant="outlined" prepend-icon="mdi-refresh" @click="refreshAll">Rafraîchir</VBtn>
+        </div>
+      </div>
     </AdminHeader>
 
     <AdminDrinkFilter />
 
     <VSheet border rounded="xl" class="pa-4">
-      <AdminDrinkTable
-        :page-size="pageSize"
-        :paged-items="pagedItems"
-        :loading="loading"
-        @preview="previewDrink"
-        @edit="editDrink"
-        @delete="deleteDrink"
-      />
+      <template v-if="isCard">
+        <AdminDrinkGrid
+          :drinks="pagedItems"
+          @preview="previewDrink"
+          @edit="editDrink"
+          @delete="deleteDrink"
+        />
+      </template>
+
+      <template v-else>
+        <AdminDrinkTable
+          :page-size="pageSize"
+          :paged-items="pagedItems"
+          :loading="loading"
+          @preview="previewDrink"
+          @edit="editDrink"
+          @delete="deleteDrink"
+        />
+      </template>
     </VSheet>
 
     <div class="d-flex justify-content-around align-items-center mt-2">
@@ -48,14 +74,16 @@
 </template>
 
 <script setup lang="ts">
-import AdminDrinkFilter from "@/components/admin/AdminDrinkFilter.vue";
-import AdminDrinkTable from "@/components/admin/AdminDrinkTable.vue";
+import AdminDrinkFilter from "@/components/admin/drink/AdminDrinkFilter.vue";
+import AdminDrinkTable from "@/components/admin/drink/AdminDrinkTable.vue";
 import AdminHeader from "@/components/admin/AdminHeader.vue";
 import BaseDialog from "@/components/common/BaseDialog.vue";
 import { useDrinkPagination } from "@/logic/composables/useDrinkPagination";
 import { useSnackbar } from "@/stores/snackbar";
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
+import AdminDrinkGrid from "@/components/admin/drink/AdminDrinkGrid.vue";
+import { useDisplay } from "vuetify";
 
 const {
   drink,
@@ -73,7 +101,22 @@ const router = useRouter();
 const snackbar = useSnackbar();
 const targetDrink = ref<{ id: number; name: string } | null>(null);
 
+const LS_KEY = "drinks.cardView";
+const { mdAndDown } = useDisplay();
+const cardViewPref = ref(readPref());
+const isCard = computed(() => mdAndDown.value || cardViewPref.value);
+const toggleDisabled = computed(() => mdAndDown.value);
+
 const openDialog = ref(false);
+
+function readPref() {
+  const raw = localStorage.getItem(LS_KEY);
+  return raw ? raw === "1" : false;
+}
+
+watch(cardViewPref, (v) => {
+  localStorage.setItem(LS_KEY, v ? "1" : "0");
+});
 
 async function onConfirm() {
   if (!targetDrink.value) return;

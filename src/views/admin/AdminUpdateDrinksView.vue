@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import AdminDrinkForm from "@/components/admin/AdminDrinkForm.vue";
+import AdminDrinkForm from "@/components/admin/drink/AdminDrinkForm.vue";
 import AdminHeader from "@/components/admin/AdminHeader.vue";
 import type { DrinkDto } from "@/models/drink";
 import type { Mode } from "@/models/utils";
